@@ -35,21 +35,6 @@
   </head>
 
   <body class="bg-background-dark text-white font-sans scroll-smooth">
-    <!-- Pesan Notifikasi Start -->
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %}
-    <div class="fixed bottom-8 right-8 z-50 space-y-4">
-      {% for category, message in messages %}
-      <div
-        class="alert px-4 py-2 rounded border shadow-lg text-sm md:text-base font-sans opacity-0 animate-fadeInDown {% if category == 'success' %} bg-green-100 text-green-800 border-green-300 {% elif category == 'error' or category == 'danger' %} bg-red-100 text-red-800 border-red-300 {% elif category == 'warning' %} bg-yellow-100 text-yellow-800 border-yellow-300 {% elif category == 'info' %} bg-blue-100 text-blue-800 border-blue-300 {% endif %}"
-      >
-        {{ message }}
-      </div>
-      {% endfor %}
-    </div>
-    {% endif %} {% endwith %}
-    <!-- Pesan Notifikasi End -->
-
     <!-- Header -->
     <header
       id="main-header"
@@ -106,51 +91,62 @@
         x-transition:leave="transition ease-in duration-75"
         x-transition:leave-start="opacity-100 scale-100"
         x-transition:leave-end="opacity-0 scale-95"
-        class="md:hidden bg-gray-900 px-6 pb-4 space-y-2 flex flex-col items-start text-start"
+        class="md:hidden bg-gray-900 px-6 pb-8 space-y-2 flex flex-col items-start text-start gap-2.5"
       >
-        <hr class="self-stretch border-gray-700" />
+        <hr class="self-stretch border-gray-700 mb-6" />
         <a
           href="#home"
           @click="open = false"
-          class="hover:text-yellow-400 text-xl"
-          >Beranda</a
+          class="hover:text-yellow-400 text-xl flex items-center gap-3"
         >
+          <i class="fas fa-house"></i> Beranda
+        </a>
         <a
           href="#news"
           @click="open = false"
-          class="hover:text-yellow-400 text-xl"
-          >Berita</a
+          class="hover:text-yellow-400 text-xl flex items-center gap-3"
         >
+          <i class="fas fa-newspaper"></i> Berita
+        </a>
         <a
           href="#portfolio"
           @click="open = false"
-          class="hover:text-yellow-400 text-xl"
-          >Portfolio</a
+          class="hover:text-yellow-400 text-xl flex items-center gap-3"
         >
+          <i class="fas fa-briefcase"></i> Portfolio
+        </a>
+
         <a
           href="#about"
           @click="open = false"
-          class="hover:text-yellow-400 text-xl"
-          >Tentang Kami</a
+          class="hover:text-yellow-400 text-xl flex items-center gap-3"
         >
+          <i class="fas fa-circle-info"></i> Tentang Kami
+        </a>
+
         <a
           href="#developer"
           @click="open = false"
-          class="hover:text-yellow-400 text-xl"
-          >Pengembang</a
+          class="hover:text-yellow-400 text-xl flex items-center gap-3"
         >
+          <i class="fas fa-code"></i> Pengembang
+        </a>
+
         <a
           href="#services"
           @click="open = false"
-          class="hover:text-yellow-400 text-xl"
-          >Layanan</a
+          class="hover:text-yellow-400 text-xl flex items-center gap-3"
         >
+          <i class="fas fa-concierge-bell"></i> Layanan
+        </a>
+
         <a
           href="#request"
           @click="open = false"
-          class="hover:text-yellow-400 text-xl"
-          >Permintaan</a
+          class="hover:text-yellow-400 text-xl flex items-center gap-3"
         >
+          <i class="fas fa-paper-plane"></i> Permintaan
+        </a>
       </div>
     </header>
 
@@ -159,99 +155,646 @@
       id="home"
       class="pt-24 min-h-screen flex items-center justify-center bg-gray-800 wow animate__animated animate__fadeInUp animate__delay-0.5s"
     >
-      <div class="text-center px-6">
-        <h2 class="text-4xl font-bold mb-4">Selamat Datang di Halaman Kami</h2>
-        <p class="text-xl">
-          PT. TOMMA CAHAYA NUSANTARA adalah badan usaha yang bergerak di bidang
-          IT. Membantu Anda dalam pengerjaan aplikasi berbasis website, penyedia
-          server hosting dan sebagai Consultan IT di Papua Selatan.
-        </p>
+      <div
+        class="container mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-10 text-white"
+      >
+        <!-- Text Content -->
+        <div class="flex-1 text-center lg:text-left">
+          <h2 class="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">
+            Selamat Datang di
+            <span class="text-yellow-400">TOMMA CAHAYA NUSANTARA</span>
+          </h2>
+          <p class="text-lg md:text-xl mb-6">
+            Kami adalah perusahaan IT yang berkomitmen membantu Anda dalam
+            pengembangan aplikasi website, penyediaan server hosting, dan
+            layanan konsultasi teknologi terbaik di Papua Selatan.
+          </p>
+          <div
+            class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
+          >
+            <a
+              href="#services"
+              class="bg-yellow-400 text-gray-900 px-6 py-3 rounded-full font-semibold hover:bg-yellow-300 transition"
+            >
+              Jelajahi Layanan
+            </a>
+            <a
+              href="#request"
+              class="border border-yellow-400 text-yellow-400 px-6 py-3 rounded-full font-semibold hover:bg-yellow-400 hover:text-gray-900 transition"
+            >
+              Ajukan Permintaan
+            </a>
+          </div>
+        </div>
+
+        <!-- Illustration / Icon -->
+        <div class="flex-1">
+          <img
+            src="/static/images/illustration-tech.svg"
+            alt="Ilustrasi Teknologi"
+            class="w-full max-w-md mx-auto animate__animated animate__fadeInRight"
+          />
+        </div>
       </div>
     </section>
 
     <!-- News Section -->
     <section
       id="news"
-      class="py-20 min-h-screen flex bg-gray-700 wow animate__animated animate__fadeInUp animate__delay-0.5s"
+      class="py-20 min-h-screen bg-gray-700 text-white wow animate__animated animate__fadeInUp animate__delay-0.5s"
     >
-      <div class="container mx-auto px-6 text-center">
-        <h2 class="text-4xl font-semibold mb-6 pt-12">Berita Terbaru</h2>
-        <p class="text-xl">
-          Ikuti perkembangan terbaru dan informasi terkini dari tim kami.
-        </p>
+      <div class="container mx-auto px-6 mt-10">
+        <div class="text-center mb-12">
+          <h2 class="text-4xl font-semibold mb-4">Berita Terbaru</h2>
+          <p class="text-xl">
+            Ikuti perkembangan terbaru dan informasi terkini dari tim kami.
+          </p>
+        </div>
+
+        <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <!-- Card 1 -->
+          <div
+            class="bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-yellow-400/30 transition"
+          >
+            <img
+              src="/static/images/news1.jpg"
+              alt="Berita 1"
+              class="w-full h-48 object-cover"
+            />
+            <div class="p-6">
+              <h3 class="text-2xl font-bold mb-2">
+                Peluncuran Layanan Hosting Baru
+              </h3>
+              <p class="text-sm text-gray-400 mb-3">12 Juni 2025</p>
+              <p class="mb-4">
+                Kami kini menyediakan layanan hosting dengan performa tinggi dan
+                harga bersaing untuk wilayah Papua Selatan.
+              </p>
+              <a href="#" class="text-yellow-400 hover:underline font-semibold"
+                >Selengkapnya →</a
+              >
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div
+            class="bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-yellow-400/30 transition"
+          >
+            <img
+              src="/static/images/news2.jpg"
+              alt="Berita 2"
+              class="w-full h-48 object-cover"
+            />
+            <div class="p-6">
+              <h3 class="text-2xl font-bold mb-2">
+                Workshop Teknologi untuk UMKM
+              </h3>
+              <p class="text-sm text-gray-400 mb-3">8 Juni 2025</p>
+              <p class="mb-4">
+                Kami mengadakan pelatihan digitalisasi untuk UMKM lokal dalam
+                memanfaatkan teknologi web dan cloud.
+              </p>
+              <a href="#" class="text-yellow-400 hover:underline font-semibold"
+                >Selengkapnya →</a
+              >
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div
+            class="bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-yellow-400/30 transition"
+          >
+            <img
+              src="/static/images/news3.jpg"
+              alt="Berita 3"
+              class="w-full h-48 object-cover"
+            />
+            <div class="p-6">
+              <h3 class="text-2xl font-bold mb-2">
+                Kerja Sama Strategis dengan Pemerintah Daerah
+              </h3>
+              <p class="text-sm text-gray-400 mb-3">3 Juni 2025</p>
+              <p class="mb-4">
+                Kami menjalin kerja sama untuk pengembangan sistem informasi
+                pemerintahan berbasis web.
+              </p>
+              <a href="#" class="text-yellow-400 hover:underline font-semibold"
+                >Selengkapnya →</a
+              >
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- Portfolio Section -->
     <section
       id="portfolio"
-      class="py-20 min-h-screen flex bg-gray-800 wow animate__animated animate__fadeInUp animate__delay-0.5s"
+      class="py-20 min-h-screen bg-gray-800 text-white wow animate__animated animate__fadeInUp animate__delay-0.5s"
     >
-      <div class="container mx-auto px-6 text-center">
-        <h2 class="text-4xl font-semibold mb-6 pt-12">Portfolio</h2>
-        <p class="text-xl">
-          Kumpulan hasil kerja terbaik kami dalam berbagai proyek dan bidang.
-        </p>
+      <div class="container mx-auto px-6 mt-7">
+        <!-- Judul -->
+        <div class="text-center mb-12">
+          <h2 class="text-4xl font-semibold mb-4 pt-6">Portfolio</h2>
+          <p class="text-xl">
+            Kumpulan hasil kerja terbaik kami dalam berbagai proyek dan bidang.
+          </p>
+        </div>
+
+        <!-- Grid Portfolio -->
+        <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <!-- Card 1 -->
+          <div
+            class="bg-gray-900 rounded-xl overflow-hidden shadow-lg group hover:shadow-yellow-400/30 transition"
+          >
+            <img
+              src="/static/images/portfolio1.jpg"
+              alt="Proyek 1"
+              class="w-full h-56 object-cover"
+            />
+            <div class="p-6">
+              <h3 class="text-2xl font-bold mb-2">Sistem Informasi Sekolah</h3>
+              <p class="text-gray-400 mb-3">
+                Sistem manajemen akademik berbasis web untuk SMA di Merauke.
+              </p>
+              <a href="#" class="text-yellow-400 hover:underline font-semibold"
+                >Lihat Detail →</a
+              >
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div
+            class="bg-gray-900 rounded-xl overflow-hidden shadow-lg group hover:shadow-yellow-400/30 transition"
+          >
+            <img
+              src="/static/images/portfolio2.jpg"
+              alt="Proyek 2"
+              class="w-full h-56 object-cover"
+            />
+            <div class="p-6">
+              <h3 class="text-2xl font-bold mb-2">Website Dinas Pemerintah</h3>
+              <p class="text-gray-400 mb-3">
+                Pembuatan website resmi dengan sistem pengelolaan konten (CMS).
+              </p>
+              <a href="#" class="text-yellow-400 hover:underline font-semibold"
+                >Lihat Detail →</a
+              >
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div
+            class="bg-gray-900 rounded-xl overflow-hidden shadow-lg group hover:shadow-yellow-400/30 transition"
+          >
+            <img
+              src="/static/images/portfolio3.jpg"
+              alt="Proyek 3"
+              class="w-full h-56 object-cover"
+            />
+            <div class="p-6">
+              <h3 class="text-2xl font-bold mb-2">Aplikasi UMKM Lokal</h3>
+              <p class="text-gray-400 mb-3">
+                Aplikasi pemesanan dan manajemen produk untuk UMKM di Papua
+                Selatan.
+              </p>
+              <a href="#" class="text-yellow-400 hover:underline font-semibold"
+                >Lihat Detail →</a
+              >
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- About Section -->
     <section
       id="about"
-      class="py-20 min-h-screen flex bg-gray-700 wow animate__animated animate__fadeInUp animate__delay-0.5s"
+      class="py-20 min-h-screen bg-gray-700 text-white wow animate__animated animate__fadeInUp animate__delay-0.5s"
     >
-      <div class="container mx-auto px-6 text-center">
-        <h2 class="text-4xl font-semibold mb-6 pt-12">Tentang Kami</h2>
-        <p class="text-xl">
-          Kami adalah tim yang berdedikasi untuk menghadirkan solusi inovatif
-          dan berkualitas.
-        </p>
+      <div class="container mx-auto px-6 mt-7">
+        <div class="text-center mb-12">
+          <h2 class="text-4xl font-semibold mb-4 pt-6">Tentang Kami</h2>
+          <p class="text-xl max-w-2xl mx-auto">
+            Kami adalah tim yang berdedikasi untuk menghadirkan solusi inovatif
+            dan berkualitas di bidang teknologi informasi.
+          </p>
+        </div>
+
+        <!-- Grid content -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+          <!-- Image -->
+          <div class="flex justify-center">
+            <img
+              src="https://source.unsplash.com/500x350/?team,technology"
+              alt="Tim Kami"
+              class="rounded-xl shadow-lg"
+            />
+          </div>
+
+          <!-- Description -->
+          <div>
+            <h3 class="text-2xl font-bold mb-4">Mengapa Memilih Kami?</h3>
+            <ul class="space-y-4 text-lg">
+              <li class="flex items-start">
+                <i class="fas fa-check-circle text-yellow-400 mt-1 mr-3"></i>
+                Tim profesional dengan pengalaman dalam berbagai proyek TI skala
+                kecil hingga besar.
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-check-circle text-yellow-400 mt-1 mr-3"></i>
+                Komitmen penuh terhadap kualitas, keamanan, dan kepuasan klien.
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-check-circle text-yellow-400 mt-1 mr-3"></i>
+                Layanan menyeluruh dari perencanaan, pengembangan, hingga
+                pemeliharaan.
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-check-circle text-yellow-400 mt-1 mr-3"></i>
+                Dukungan IT lokal untuk Papua Selatan dengan pemahaman konteks
+                budaya dan geografis.
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- Developer Section -->
     <section
       id="developer"
-      class="py-20 min-h-screen flex bg-gray-800 wow animate__animated animate__fadeInUp animate__delay-0.5s"
+      class="py-20 min-h-screen bg-gray-800 text-white wow animate__animated animate__fadeInUp animate__delay-0.5s"
     >
-      <div class="container mx-auto px-6 text-center">
-        <h2 class="text-4xl font-semibold mb-6 pt-12">Profil Developer</h2>
-        <p class="text-xl">
-          Informasi mengenai tim pengembang yang berada di balik proyek ini.
-        </p>
+      <div class="container mx-auto px-6 mt-7">
+        <div class="text-center mb-12">
+          <h2 class="text-4xl font-semibold mb-4 pt-6">Profil Developer</h2>
+          <p class="text-xl max-w-2xl mx-auto">
+            Tim pengembang yang berdedikasi di balik kesuksesan setiap proyek
+            yang kami bangun.
+          </p>
+        </div>
+
+        <!-- Developer Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-10">
+          <!-- Developer 1 -->
+          <div class="bg-gray-700 rounded-lg p-6 shadow-lg text-center">
+            <img
+              src="https://source.unsplash.com/150x150/?person"
+              alt="Foto Developer"
+              class="w-32 h-32 mx-auto rounded-full mb-4 border-4 border-yellow-400"
+            />
+            <h3 class="text-xl font-bold">Rizky Pattiasina</h3>
+            <p class="text-yellow-400 mb-2">Full Stack Developer</p>
+            <p class="text-sm mb-4">
+              Mahasiswa Sistem Informasi Universitas Musamus. Rizky adalah
+              pengembang yang memiliki pendekatan holistik terhadap pembangunan
+              aplikasi — mulai dari desain arsitektur backend hingga antarmuka
+              pengguna yang responsif. Fokus utamanya adalah menciptakan solusi
+              digital yang handal dan scalable.
+            </p>
+            <div class="flex justify-center space-x-4 text-lg text-white">
+              <a
+                href="https://github.com/username"
+                target="_blank"
+                class="hover:text-yellow-400"
+              >
+                <i class="fab fa-github"></i>
+              </a>
+              <a
+                href="https://www.linkedin.com/in/username"
+                target="_blank"
+                class="hover:text-yellow-400"
+              >
+                <i class="fab fa-linkedin"></i>
+              </a>
+              <a href="mailto:email@example.com" class="hover:text-yellow-400">
+                <i class="fas fa-envelope"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Developer 2 (Contoh Tambahan) -->
+          <div class="bg-gray-700 rounded-lg p-6 shadow-lg text-center">
+            <img
+              src="https://source.unsplash.com/150x150/?developer"
+              alt="Foto Developer"
+              class="w-32 h-32 mx-auto rounded-full mb-4 border-4 border-yellow-400"
+            />
+            <h3 class="text-xl font-bold">Adi Prasetyo</h3>
+            <p class="text-yellow-400 mb-2">Full Stack Developer</p>
+            <p class="text-sm mb-4">
+              Mahasiswa Jurusan Teknik Informatika Universitas Musamus. Adi
+              adalah developer yang menggabungkan kreativitas dalam desain UI
+              dengan keahlian teknis dalam pengelolaan sistem backend. Ia
+              berkomitmen untuk membangun aplikasi yang efisien, user-friendly,
+              dan siap digunakan dalam skala besar.
+            </p>
+            <div class="flex justify-center space-x-4 text-lg text-white">
+              <a
+                href="https://github.com/raka"
+                target="_blank"
+                class="hover:text-yellow-400"
+              >
+                <i class="fab fa-github"></i>
+              </a>
+              <a
+                href="https://linkedin.com/in/raka"
+                target="_blank"
+                class="hover:text-yellow-400"
+              >
+                <i class="fab fa-linkedin"></i>
+              </a>
+              <a href="mailto:raka@example.com" class="hover:text-yellow-400">
+                <i class="fas fa-envelope"></i>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- Services Section -->
     <section
       id="services"
-      class="py-20 min-h-screen flex bg-gray-700 wow animate__animated animate__fadeInUp animate__delay-0.5s"
+      class="py-20 min-h-screen bg-gray-700 text-white wow animate__animated animate__fadeInUp animate__delay-0.5s"
     >
-      <div class="container mx-auto px-6 text-center">
-        <h2 class="text-4xl font-semibold mb-6 pt-12">Layanan Kami</h2>
-        <p class="text-xl">
-          Berbagai layanan profesional yang kami tawarkan untuk memenuhi
-          kebutuhan Anda.
-        </p>
+      <div class="container mx-auto px-6 mt-7">
+        <div class="text-center mb-12">
+          <h2 class="text-4xl font-semibold mb-4 pt-6">Layanan Kami</h2>
+          <p class="text-xl max-w-2xl mx-auto">
+            Berbagai layanan profesional yang kami tawarkan untuk mendukung
+            transformasi digital Anda.
+          </p>
+        </div>
+
+        <!-- Services Grid -->
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mt-10"
+        >
+          <!-- Layanan 1 -->
+          <div
+            class="bg-gray-800 p-6 rounded-xl shadow-md text-center hover:bg-gray-900 transition duration-300"
+          >
+            <div class="text-yellow-400 text-4xl mb-4">
+              <i class="fas fa-laptop-code"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Pengembangan Website</h3>
+            <p class="text-sm">
+              Membangun aplikasi berbasis website yang modern, responsif, dan
+              aman sesuai kebutuhan Anda.
+            </p>
+          </div>
+
+          <!-- Layanan 2 -->
+          <div
+            class="bg-gray-800 p-6 rounded-xl shadow-md text-center hover:bg-gray-900 transition duration-300"
+          >
+            <div class="text-yellow-400 text-4xl mb-4">
+              <i class="fas fa-server"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Hosting & Server</h3>
+            <p class="text-sm">
+              Menyediakan layanan hosting, server, dan domain dengan performa
+              tinggi dan dukungan teknis 24/7.
+            </p>
+          </div>
+
+          <!-- Layanan 3 -->
+          <div
+            class="bg-gray-800 p-6 rounded-xl shadow-md text-center hover:bg-gray-900 transition duration-300"
+          >
+            <div class="text-yellow-400 text-4xl mb-4">
+              <i class="fas fa-network-wired"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">IT Infrastruktur</h3>
+            <p class="text-sm">
+              Solusi lengkap untuk infrastruktur jaringan, perangkat keras, dan
+              sistem komunikasi internal perusahaan.
+            </p>
+          </div>
+
+          <!-- Layanan 4 -->
+          <div
+            class="bg-gray-800 p-6 rounded-xl shadow-md text-center hover:bg-gray-900 transition duration-300"
+          >
+            <div class="text-yellow-400 text-4xl mb-4">
+              <i class="fas fa-user-shield"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Konsultasi IT</h3>
+            <p class="text-sm">
+              Memberikan arahan dan strategi terbaik dalam implementasi
+              teknologi informasi di berbagai sektor.
+            </p>
+          </div>
+
+          <!-- Layanan 5 -->
+          <div
+            class="bg-gray-800 p-6 rounded-xl shadow-md text-center hover:bg-gray-900 transition duration-300"
+          >
+            <div class="text-yellow-400 text-4xl mb-4">
+              <i class="fas fa-cogs"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Sistem Informasi</h3>
+            <p class="text-sm">
+              Pengembangan sistem informasi untuk manajemen data, pelaporan, dan
+              otomatisasi proses bisnis.
+            </p>
+          </div>
+
+          <!-- Layanan 6 -->
+          <div
+            class="bg-gray-800 p-6 rounded-xl shadow-md text-center hover:bg-gray-900 transition duration-300"
+          >
+            <div class="text-yellow-400 text-4xl mb-4">
+              <i class="fas fa-mobile-alt"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Aplikasi Mobile</h3>
+            <p class="text-sm">
+              Pengembangan aplikasi Android/iOS yang responsif, ringan, dan
+              terintegrasi dengan sistem backend.
+            </p>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- Request Section -->
     <section
       id="request"
-      class="py-20 min-h-screen flex bg-gray-800 wow animate__animated animate__fadeInUp animate__delay-0.5s"
+      class="py-20 min-h-screen bg-gray-800 text-white wow animate__animated animate__fadeInUp animate__delay-0.5s"
     >
-      <div class="container mx-auto px-6 text-center">
-        <h2 class="text-4xl font-semibold mb-6 pt-12">Permintaan Layanan</h2>
-        <p class="text-xl">
-          Ajukan kebutuhan atau permintaan khusus Anda kepada tim kami.
-        </p>
+      <div class="container mx-auto px-6 mt-7">
+        <div class="text-center mb-12">
+          <h2 class="text-4xl font-semibold mb-4 pt-6">Permintaan Layanan</h2>
+          <p class="text-xl max-w-2xl mx-auto">
+            Ajukan kebutuhan atau permintaan khusus Anda kepada tim kami. Kami
+            akan segera menghubungi Anda kembali.
+          </p>
+        </div>
+
+        <!-- Form -->
+        <form
+          class="max-w-3xl mx-auto bg-gray-900 p-8 rounded-xl shadow-lg space-y-6"
+          action="#"
+          method="POST"
+        >
+          <!-- Nama -->
+          <div class="text-left">
+            <label class="block text-sm font-medium mb-2" for="name"
+              >Nama Lengkap</label
+            >
+            <input
+              type="text"
+              id="name"
+              name="name"
+              required
+              class="w-full px-4 py-3 rounded-md bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              placeholder="Masukkan nama Anda"
+            />
+          </div>
+
+          <!-- Email -->
+          <div class="text-left">
+            <label class="block text-sm font-medium mb-2" for="email"
+              >Email</label
+            >
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              class="w-full px-4 py-3 rounded-md bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              placeholder="you@example.com"
+            />
+          </div>
+
+          <!-- Jenis Layanan -->
+          <div class="text-left">
+            <label class="block text-sm font-medium mb-2" for="service"
+              >Jenis Layanan</label
+            >
+            <select
+              id="service"
+              name="service"
+              required
+              class="w-full px-4 py-3 rounded-md bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            >
+              <option value="">-- Pilih Layanan --</option>
+              <option>Pengembangan Website</option>
+              <option>Hosting & Server</option>
+              <option>Konsultasi IT</option>
+              <option>Infrastruktur Jaringan</option>
+              <option>Aplikasi Mobile</option>
+              <option>Layanan Lainnya</option>
+            </select>
+          </div>
+
+          <!-- Pesan -->
+          <div class="text-left">
+            <label class="block text-sm font-medium mb-2" for="message"
+              >Pesan / Detail Permintaan</label
+            >
+            <textarea
+              id="message"
+              name="message"
+              rows="5"
+              required
+              class="w-full px-4 py-3 rounded-md bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              placeholder="Tuliskan kebutuhan atau pertanyaan Anda di sini..."
+            ></textarea>
+          </div>
+
+          <!-- Tombol Submit -->
+          <div class="text-center">
+            <button
+              type="submit"
+              class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold px-6 py-3 rounded-md shadow-md transition duration-300"
+            >
+              Kirim Permintaan
+            </button>
+          </div>
+        </form>
       </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-center text-white py-8">
-      <p class="text-sm">&copy; 2025 TOMMA OFFICIAL. All rights reserved.</p>
+    <footer class="bg-gray-900 text-white py-12">
+      <div
+        class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left"
+      >
+        <!-- Logo / Perusahaan -->
+        <div>
+          <h3 class="text-2xl font-bold mb-4 text-yellow-400">
+            PT. TOMMA CAHAYA NUSANTARA
+          </h3>
+          <p class="text-sm text-gray-400">
+            Solusi IT terpercaya dari Papua Selatan. Fokus pada pengembangan
+            aplikasi, server hosting, dan konsultasi digital.
+          </p>
+        </div>
+
+        <!-- Navigasi -->
+        <div>
+          <h4 class="text-xl font-semibold mb-4">Navigasi</h4>
+          <ul class="space-y-2 text-sm text-gray-400">
+            <li><a href="#home" class="hover:text-yellow-400">Beranda</a></li>
+            <li>
+              <a href="#news" class="hover:text-yellow-400">Berita</a>
+            </li>
+            <li>
+              <a href="#portfolio" class="hover:text-yellow-400">Portfolio</a>
+            </li>
+            <li>
+              <a href="#about" class="hover:text-yellow-400">Tentang Kami</a>
+            </li>
+            <li>
+              <a href="#services" class="hover:text-yellow-400">Layanan</a>
+            </li>
+            <li>
+              <a href="#request" class="hover:text-yellow-400">Permintaan</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Sosial Media -->
+        <div>
+          <h4 class="text-xl font-semibold mb-4">Ikuti Kami</h4>
+          <div class="flex justify-center md:justify-start gap-4 text-xl">
+            <a
+              href="https://facebook.com"
+              target="_blank"
+              class="hover:text-yellow-400"
+            >
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a
+              href="https://instagram.com"
+              target="_blank"
+              class="hover:text-yellow-400"
+            >
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              class="hover:text-yellow-400"
+            >
+              <i class="fab fa-linkedin-in"></i>
+            </a>
+            <a href="mailto:info@tomma.co" class="hover:text-yellow-400">
+              <i class="fas fa-envelope"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Batas -->
+      <div
+        class="mt-10 border-t border-gray-700 pt-6 text-center text-sm text-gray-500"
+      >
+        &copy; 2025 TOMMA OFFICIAL. All rights reserved.
+      </div>
     </footer>
 
     <!-- Animation Script -->
