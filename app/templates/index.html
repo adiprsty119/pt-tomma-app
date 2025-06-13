@@ -329,9 +329,13 @@
               class="w-full h-56 object-cover"
             />
             <div class="p-6">
-              <h3 class="text-xl font-bold mb-2">Sistem Informasi Sekolah</h3>
+              <h3 class="text-xl font-bold mb-2">
+                Sistem Informasi Pengarsipan Surat Internal Biro Pemerintahan,
+                Otsus dan Kesra Setda Provinsi Papua Selatan
+              </h3>
               <p class="text-gray-400 text-[0.9rem] mb-3">
-                Sistem manajemen akademik berbasis web untuk SMA di Merauke.
+                Sistem informasi manajemen pengarsipan surat untuk
+                pengelolaan...
               </p>
               <a
                 href="#"
@@ -351,9 +355,12 @@
               class="w-full h-56 object-cover"
             />
             <div class="p-6">
-              <h3 class="text-xl font-bold mb-2">Website Dinas Pemerintah</h3>
+              <h3 class="text-xl font-bold mb-2">
+                Website marketplace Lokal Merauke Online
+              </h3>
               <p class="text-gray-400 text-[0.9rem] mb-3">
-                Pembuatan website resmi dengan sistem pengelolaan konten (CMS).
+                Pembuatan website marketplace lokal untuk memberdayakan UMKM
+                lokal di Kabupaten Merauke...
               </p>
               <a
                 href="#"
@@ -373,10 +380,12 @@
               class="w-full h-56 object-cover"
             />
             <div class="p-6">
-              <h3 class="text-xl font-bold mb-2">Aplikasi UMKM Lokal</h3>
+              <h3 class="text-xl font-bold mb-2">
+                Website Berita Info Merauke
+              </h3>
               <p class="text-gray-400 text-[0.9rem] mb-3">
-                Aplikasi pemesanan dan manajemen produk untuk UMKM di Papua
-                Selatan.
+                Website pemberitaan bagi media Info Merauke yang disajikan
+                sebagai bentuk layanan publik yang informatif...
               </p>
               <a
                 href="#"
@@ -500,7 +509,7 @@
               >
                 <i class="fab fa-linkedin"></i>
               </a>
-              <a href="mailto:email@example.com" class="hover:text-yellow-400">
+              <a href="rizkypattiasina@gmail.com" class="hover:text-yellow-400">
                 <i class="fas fa-envelope"></i>
               </a>
             </div>
@@ -539,7 +548,7 @@
               >
                 <i class="fab fa-linkedin"></i>
               </a>
-              <a href="mailto:raka@example.com" class="hover:text-yellow-400">
+              <a href="adip98816@gmail.com" class="hover:text-yellow-400">
                 <i class="fas fa-envelope"></i>
               </a>
             </div>
@@ -853,6 +862,7 @@
 
         // Transparent header on scroll
         $(window).on("scroll", function () {
+          console.log("Scroll posisi:", window.scrollY); // DEBUG
           const header = document.getElementById("main-header");
           if (window.scrollY > 10) {
             header.classList.remove("bg-opacity-100");
@@ -861,19 +871,6 @@
             header.classList.remove("bg-opacity-30");
             header.classList.add("bg-opacity-100");
           }
-        });
-
-        // Auto-dismiss flash messages
-        const alerts = document.querySelectorAll(".alert");
-        alerts.forEach((alert) => {
-          setTimeout(() => {
-            alert.style.transition = "opacity 0.5s ease, transform 0.5s ease";
-            alert.style.opacity = "0";
-            alert.style.transform = "translateY(-10px)";
-            setTimeout(() => {
-              alert.remove();
-            }, 1500);
-          }, 3000);
         });
       });
     </script>
