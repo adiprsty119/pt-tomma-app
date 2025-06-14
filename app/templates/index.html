@@ -32,6 +32,209 @@
       defer
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
     ></script>
+
+    <!-- Style 3D Rotate -->
+    <style>
+      .perspective {
+        perspective: 1000px;
+      }
+      .transform-style {
+        transform-style: preserve-3d;
+      }
+      .backface-hidden {
+        backface-visibility: hidden;
+      }
+      .rotate-y-180 {
+        transform: rotateY(180deg);
+      }
+
+      /* Animasi ikon gear berputar */
+      @keyframes spin-clockwise {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes spin-counter {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(-360deg);
+        }
+      }
+
+      .gear-container {
+        position: relative;
+        display: inline-block;
+        width: 2.5rem;
+        height: 2.5rem;
+      }
+
+      .gear-left,
+      .gear-right {
+        position: absolute;
+        font-size: 1.5rem;
+        color: #facc15; /* Tailwind yellow-400 */
+      }
+
+      .gear-left {
+        top: -0.3rem;
+        left: -0.6rem;
+      }
+
+      .gear-right {
+        top: 0.3rem;
+        left: 0.6rem;
+      }
+
+      /* Animasi ikon bergoyang kiri-kanan */
+      @keyframes shake-icon {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-4px);
+        }
+        75% {
+          transform: translateX(4px);
+        }
+      }
+
+      /* Animasi ikon naik-turun */
+      @keyframes bounce-icon {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-5px);
+        }
+      }
+
+      @keyframes grow-icon {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.2);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      @keyframes pulse-icon {
+        0% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.1);
+          opacity: 0.8;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      @keyframes slide-up-icon {
+        0% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-8px);
+        }
+        100% {
+          transform: translateY(0);
+        }
+      }
+
+      /* Utilitas */
+      .hover-parent:hover .gear-left {
+        animation: spin-clockwise 0.8s linear;
+        animation-iteration-count: 1;
+        animation-fill-mode: both;
+      }
+
+      .hover-parent:hover .gear-right {
+        animation: spin-counter 0.8s linear;
+        animation-iteration-count: 1;
+        animation-fill-mode: both;
+      }
+
+      .hover-parent:hover .shake-on-hover {
+        animation: shake-icon 0.6s ease-in-out infinite;
+        animation-iteration-count: 1;
+        animation-fill-mode: both;
+      }
+
+      .hover-parent:hover .bounce-on-hover {
+        animation: bounce-icon 0.6s ease-in-out infinite;
+        animation-iteration-count: 1;
+        animation-fill-mode: both;
+      }
+
+      .hover-parent:hover .grow-on-hover {
+        animation: grow-icon 0.6s ease-in-out;
+        animation-iteration-count: 1;
+        animation-fill-mode: both;
+      }
+
+      .hover-parent:hover .pulse-on-hover {
+        animation: pulse-icon 0.6s ease-in-out;
+        animation-iteration-count: 1;
+        animation-fill-mode: both;
+      }
+
+      .hover-parent:hover .slide-up-on-hover {
+        animation: slide-up-icon 0.6s ease-out;
+        animation-iteration-count: 1;
+        animation-fill-mode: both;
+      }
+
+      .image-wrapper {
+        position: relative;
+        width: 550px;
+        height: auto;
+        overflow: visible;
+      }
+
+      .fade-img {
+        opacity: 0;
+        transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 10;
+      }
+
+      .fade-img.active {
+        opacity: 1;
+        position: relative;
+        z-index: 15;
+      }
+
+      .color-fade {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, #facc15, #ec4899, #6366f1);
+        opacity: 0;
+        z-index: 20;
+        pointer-events: none;
+        transition: opacity 0.5s ease-in-out;
+        mix-blend-mode: screen; /* Optional: agar lebih menyatu */
+      }
+
+      .color-fade.show {
+        opacity: 1;
+      }
+    </style>
   </head>
 
   <body class="bg-background-dark text-white font-sans scroll-smooth">
@@ -59,7 +262,9 @@
           :aria-expanded="open.toString()"
           aria-label="Toggle navigation menu"
         >
-          <i :class="open ? 'fa-solid fa-xmark' : 'fa-solid fa-bars'"></i>
+          <i
+            :class="open ? 'fa-solid fa-xmark cursor-pointer' : 'fa-solid fa-bars cursor-pointer'"
+          ></i>
         </button>
 
         <!-- Desktop Navigation -->
@@ -191,17 +396,33 @@
 
         <!-- Illustration -->
         <div class="flex-1 flex justify-center mb-10">
-          <div class="relative w-full max-w-max">
-            <!-- Background Glow -->
+          <div class="relative image-wrapper rounded-xl overflow-visible">
+            <!-- ✅ GLOW harus berada di bawah gambar -->
             <div
-              class="absolute -inset-2 bg-gradient-to-tr from-yellow-400 via-pink-500 to-indigo-500 rounded-3xl blur-xl opacity-30"
+              class="absolute inset-0 bg-gradient-to-tr from-yellow-400 via-pink-500 to-indigo-500 blur-3xl opacity-40 z-0"
             ></div>
 
-            <!-- Gambar -->
+            <!-- ✅ Fade overlay hitam (pastikan ini tidak menutupi glow) -->
+            <div id="colorFade" class="black-fade rounded-xl"></div>
+
+            <!-- ✅ Gambar-gambar (z-index lebih tinggi dari glow) -->
             <img
               src="{{ url_for('static', filename='images/ilustrasi.png') }}"
-              alt="Ilustrasi Teknologi"
-              class="relative w-[300px] md:w-[300px] lg:w-max rounded-xl shadow-lg animate__animated animate__fadeInRight"
+              alt="Ilustrasi 1"
+              class="fade-img active rounded-xl shadow-lg"
+              id="img1"
+            />
+            <img
+              src="{{ url_for('static', filename='images/ilustrasi-2.png') }}"
+              alt="Ilustrasi 2"
+              class="fade-img rounded-xl shadow-lg"
+              id="img2"
+            />
+            <img
+              src="{{ url_for('static', filename='images/ilustrasi-3.png') }}"
+              alt="Ilustrasi 3"
+              class="fade-img rounded-xl shadow-lg"
+              id="img3"
             />
           </div>
         </div>
@@ -215,7 +436,9 @@
     >
       <div class="container mx-auto px-6 mt-10">
         <div class="text-center mb-12">
-          <h2 class="text-2xl font-semibold mb-4">Berita Terbaru</h2>
+          <h2 class="text-2xl text-yellow-400 font-semibold mb-4">
+            Berita Terbaru
+          </h2>
           <p class="text-sm">
             Ikuti perkembangan terbaru dan informasi terkini dari tim kami.
           </p>
@@ -238,7 +461,7 @@
               <p class="text-sm text-gray-400 mb-3">12 Juni 2025</p>
               <p class="mb-4 text-[0.9rem]">
                 Kami kini menyediakan layanan hosting dengan performa tinggi dan
-                harga bersaing untuk wilayah Papua Selatan.
+                harga bersaing untuk wilayah Papua Selatan...
               </p>
               <a
                 href="#"
@@ -259,12 +482,12 @@
             />
             <div class="p-6">
               <h3 class="text-xl font-bold mb-2">
-                Workshop Teknologi untuk UMKM
+                Workshop Teknologi untuk UMKM Lokal
               </h3>
               <p class="text-sm text-gray-400 mb-3">8 Juni 2025</p>
               <p class="mb-4 text-[0.9rem]">
                 Kami mengadakan pelatihan digitalisasi untuk UMKM lokal dalam
-                memanfaatkan teknologi web dan cloud.
+                memanfaatkan teknologi web dan cloud...
               </p>
               <a
                 href="#"
@@ -285,12 +508,12 @@
             />
             <div class="p-6">
               <h3 class="text-xl font-bold mb-2">
-                Kerja Sama Strategis dengan Pemerintah Daerah
+                Kerja Sama dengan Pemerintah Daerah
               </h3>
               <p class="text-sm text-gray-400 mb-3">3 Juni 2025</p>
               <p class="mb-4 text-[0.9rem]">
                 Kami menjalin kerja sama untuk pengembangan sistem informasi
-                pemerintahan berbasis web.
+                pemerintahan berbasis web...
               </p>
               <a
                 href="#"
@@ -311,7 +534,9 @@
       <div class="container mx-auto px-6 mt-7">
         <!-- Judul -->
         <div class="text-center mb-12">
-          <h2 class="text-2xl font-semibold mb-4 pt-6">Portfolio</h2>
+          <h2 class="text-2xl text-yellow-400 font-semibold mb-4 pt-6">
+            Portfolio
+          </h2>
           <p class="text-sm">
             Kumpulan hasil kerja terbaik kami dalam berbagai proyek dan bidang.
           </p>
@@ -356,7 +581,7 @@
             />
             <div class="p-6">
               <h3 class="text-xl font-bold mb-2">
-                Website marketplace Lokal Merauke Online
+                Website Marketplace Lokal Merauke Online
               </h3>
               <p class="text-gray-400 text-[0.9rem] mb-3">
                 Pembuatan website marketplace lokal untuk memberdayakan UMKM
@@ -405,7 +630,9 @@
     >
       <div class="container mx-auto px-6 mt-7">
         <div class="text-center mb-12">
-          <h2 class="text-2xl font-semibold mb-4 pt-6">Tentang Kami</h2>
+          <h2 class="text-2xl text-yellow-400 font-semibold mb-4 pt-6">
+            Tentang Kami
+          </h2>
           <p class="text-sm max-w-2xl mx-auto">
             Kami adalah tim yang berdedikasi untuk menghadirkan solusi inovatif
             dan berkualitas di bidang teknologi informasi.
@@ -467,90 +694,168 @@
     >
       <div class="container mx-auto px-6 mt-7">
         <div class="text-center mb-12">
-          <h2 class="text-2xl font-semibold mb-4 pt-6">Profil Developer</h2>
+          <h2 class="text-2xl text-yellow-400 font-semibold mb-4 pt-6">
+            Profil Developer
+          </h2>
           <p class="text-sm max-w-2xl mx-auto">
             Tim pengembang yang berdedikasi di balik kesuksesan setiap proyek
             yang kami bangun.
           </p>
         </div>
 
-        <!-- Developer Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-10">
-          <!-- Developer 1 -->
-          <div
-            class="bg-gray-700 rounded-lg p-6 shadow-lg text-center hover:shadow-yellow-400/30 transition cursor-pointer"
-          >
-            <img
-              src="{{ url_for('static', filename='images/') }}"
-              alt="Foto Developer"
-              class="w-32 h-32 mx-auto rounded-full mb-4 border-4 border-yellow-400"
-            />
-            <h3 class="text-xl font-bold">Rizky Pattiasina</h3>
-            <p class="text-yellow-400 mb-2">Full Stack Developer</p>
-            <p class="text-sm mb-4">
-              Mahasiswa Sistem Informasi Universitas Musamus. Rizky adalah
-              pengembang yang memiliki pendekatan holistik terhadap pembangunan
-              aplikasi — mulai dari desain arsitektur backend hingga antarmuka
-              pengguna yang responsif. Fokus utamanya adalah menciptakan solusi
-              digital yang handal dan scalable.
-            </p>
-            <div class="flex justify-center space-x-4 text-lg text-white">
-              <a
-                href="https://github.com/username"
-                target="_blank"
-                class="hover:text-yellow-400"
+        <!-- Profil Developer (Flip Card) -->
+        <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-2">
+          <!-- Card 1 -->
+          <div class="perspective">
+            <div
+              class="relative w-full h-80 transition-transform duration-700 transform-style preserve-3d card-inner"
+            >
+              <!-- Front Side -->
+              <div
+                class="absolute w-full h-[350px] bg-gray-900 rounded-xl shadow-lg backface-hidden flex flex-col items-center justify-center text-center p-6 py-24 hover:shadow-yellow-400/30 transition cursor-pointer"
               >
-                <i class="fab fa-github"></i>
-              </a>
-              <a
-                href="https://www.linkedin.com/in/username"
-                target="_blank"
-                class="hover:text-yellow-400"
+                <img
+                  src="{{ url_for('static', filename='images/Adi-Prasetyo.JPG') }}"
+                  alt="Foto Adi"
+                  class="w-44 h-44 rounded-full object-cover mb-4"
+                />
+                <h3 class="text-xl font-bold">Rizky Pattiasina</h3>
+                <h4 class="text-yellow-400 text-sm mt-1">Direktur PT TOMMA</h4>
+                <div
+                  class="flex justify-center space-x-4 text-lg text-white mt-8"
+                >
+                  <a
+                    href="https://github.com/adiprsty119"
+                    target="_blank"
+                    class="hover:text-yellow-400 relative group"
+                  >
+                    <i class="fab fa-github"></i>
+                    <span
+                      class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
+                    >
+                      Kunjungi GitHub rizkypattiasina
+                    </span>
+                  </a>
+                  <a
+                    href="https://www.linkedin.com/in/adi-prasetyo-86808528b/"
+                    target="_blank"
+                    class="hover:text-yellow-400 relative group"
+                  >
+                    <i class="fab fa-linkedin"></i>
+                    <span
+                      class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
+                    >
+                      Kunjungi Linkedin rizkypattiasina
+                    </span>
+                  </a>
+                  <a
+                    href="adip98816@gmail.com"
+                    class="hover:text-yellow-400 relative group"
+                  >
+                    <i class="fas fa-envelope"></i>
+                    <span
+                      class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
+                    >
+                      Kunjungi Instagram rizkypattiasina
+                    </span>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Back Side -->
+              <div
+                class="absolute w-full h-[350px] bg-gray-800 rounded-xl shadow-lg backface-hidden rotate-y-180 flex flex-col items-center justify-center text-center p-6 py-24 hover:shadow-yellow-400/30 transition cursor-pointer"
               >
-                <i class="fab fa-linkedin"></i>
-              </a>
-              <a href="rizkypattiasina@gmail.com" class="hover:text-yellow-400">
-                <i class="fas fa-envelope"></i>
-              </a>
+                <h3 class="text-xl font-bold mb-2">Rizky Pattiasina</h3>
+                <p class="text-yellow-400 font-semibold mb-2">
+                  Full Stack Developer
+                </p>
+                <p class="text-sm text-gray-300">
+                  Mahasiswa Sistem Informasi Universitas Musamus. Rizky adalah
+                  pengembang yang memiliki pendekatan holistik terhadap
+                  pembangunan aplikasi — mulai dari desain arsitektur backend
+                  hingga antarmuka pengguna yang responsif. Fokus utamanya
+                  adalah menciptakan solusi digital yang handal dan scalable.
+                </p>
+              </div>
             </div>
           </div>
 
-          <!-- Developer 2 (Contoh Tambahan) -->
-          <div
-            class="bg-gray-700 rounded-lg p-6 shadow-lg text-center hover:shadow-yellow-400/30 transition cursor-pointer"
-          >
-            <img
-              src="{{ url_for('static', filename='images/Adi-Prasetyo.JPG') }}"
-              alt="Foto Developer"
-              class="w-32 h-32 mx-auto rounded-full mb-4 border-4 border-yellow-400"
-            />
-            <h3 class="text-xl font-bold">Adi Prasetyo</h3>
-            <p class="text-yellow-400 mb-2">Full Stack Developer</p>
-            <p class="text-sm mb-4">
-              Mahasiswa Jurusan Teknik Informatika Universitas Musamus. Adi
-              adalah developer yang menggabungkan kreativitas dalam desain UI
-              dengan keahlian teknis dalam pengelolaan sistem backend. Ia
-              berkomitmen untuk membangun aplikasi yang efisien, user-friendly,
-              dan siap digunakan dalam skala besar.
-            </p>
-            <div class="flex justify-center space-x-4 text-lg text-white">
-              <a
-                href="https://github.com/adiprsty119"
-                target="_blank"
-                class="hover:text-yellow-400"
+          <!-- Card 2 -->
+          <div class="perspective">
+            <div
+              class="relative w-full h-80 transition-transform duration-700 transform-style preserve-3d card-inner"
+            >
+              <!-- Front Side -->
+              <div
+                class="absolute w-full h-[350px] bg-gray-900 rounded-xl shadow-lg backface-hidden flex flex-col items-center justify-center text-center p-6 py-24 hover:shadow-yellow-400/30 transition cursor-pointer"
               >
-                <i class="fab fa-github"></i>
-              </a>
-              <a
-                href="https://www.linkedin.com/in/adi-prasetyo-86808528b/"
-                target="_blank"
-                class="hover:text-yellow-400"
+                <img
+                  src="{{ url_for('static', filename='images/Adi-Prasetyo.JPG') }}"
+                  alt="Foto Budi"
+                  class="w-44 h-44 rounded-full object-cover mb-4"
+                />
+                <h3 class="text-xl font-bold">Adi Prasetyo</h3>
+                <h4 class="text-yellow-400 text-sm mt-1">
+                  Wakil Direktur PT. TOMMA
+                </h4>
+                <div
+                  class="flex justify-center space-x-4 text-lg text-white mt-8"
+                >
+                  <a
+                    href="https://github.com/adiprsty119"
+                    target="_blank"
+                    class="hover:text-yellow-400 relative group"
+                  >
+                    <i class="fab fa-github"></i>
+                    <span
+                      class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
+                    >
+                      Kunjungi GitHub adiprsty119
+                    </span>
+                  </a>
+                  <a
+                    href="https://www.linkedin.com/in/adi-prasetyo-86808528b/"
+                    target="_blank"
+                    class="hover:text-yellow-400 relative group"
+                  >
+                    <i class="fab fa-linkedin"></i>
+                    <span
+                      class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
+                    >
+                      Kunjungi Linkedin adiprsty119
+                    </span>
+                  </a>
+                  <a
+                    href="adip98816@gmail.com"
+                    class="hover:text-yellow-400 relative group"
+                  >
+                    <i class="fas fa-envelope"></i>
+                    <span
+                      class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
+                    >
+                      Kunjungi Instagram adiprsty119
+                    </span>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Back Side -->
+              <div
+                class="absolute w-full h-[350px] bg-gray-800 rounded-xl shadow-lg backface-hidden rotate-y-180 flex flex-col items-center justify-center text-center p-6 py-24 hover:shadow-yellow-400/30 transition cursor-pointer"
               >
-                <i class="fab fa-linkedin"></i>
-              </a>
-              <a href="adip98816@gmail.com" class="hover:text-yellow-400">
-                <i class="fas fa-envelope"></i>
-              </a>
+                <h3 class="text-xl font-bold mb-2">Adi Prasetyo</h3>
+                <p class="text-yellow-400 font-semibold mb-2">
+                  Full Stack Developer
+                </p>
+                <p class="text-sm text-gray-300">
+                  Mahasiswa Jurusan Teknik Informatika Universitas Musamus. Adi
+                  adalah developer yang menggabungkan kreativitas dalam desain
+                  UI dengan keahlian teknis dalam pengelolaan sistem backend. Ia
+                  berkomitmen untuk membangun aplikasi yang efisien,
+                  user-friendly, dan siap digunakan dalam skala besar.
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -564,7 +869,9 @@
     >
       <div class="container mx-auto px-6 mt-7">
         <div class="text-center mb-12">
-          <h2 class="text-2xl font-semibold mb-4 pt-6">Layanan Kami</h2>
+          <h2 class="text-2xl text-yellow-400 font-semibold mb-4 pt-6">
+            Layanan Kami
+          </h2>
           <p class="text-sm max-w-2xl mx-auto">
             Berbagai layanan profesional yang kami tawarkan untuk mendukung
             transformasi digital Anda.
@@ -577,10 +884,10 @@
         >
           <!-- Layanan 1 -->
           <div
-            class="bg-gray-800 p-6 rounded-xl shadow-md text-center cursor-pointer hover:bg-gray-900 transition duration-300"
+            class="bg-gray-800 p-6 rounded-xl shadow-md text-center cursor-pointer hover:bg-gray-900 hover:shadow-yellow-400/30 transition duration-300 hover-parent"
           >
             <div class="text-yellow-400 text-4xl mb-4">
-              <i class="fas fa-laptop-code"></i>
+              <i class="fas fa-laptop-code bounce-on-hover"></i>
             </div>
             <h3 class="text-xl font-bold mb-2">Pengembangan Website</h3>
             <p class="text-sm">
@@ -591,10 +898,10 @@
 
           <!-- Layanan 2 -->
           <div
-            class="bg-gray-800 p-6 rounded-xl shadow-md text-center cursor-pointer hover:bg-gray-900 transition duration-300"
+            class="bg-gray-800 p-6 rounded-xl shadow-md text-center cursor-pointer hover:bg-gray-900 hover:shadow-yellow-400/30 transition duration-300 hover-parent"
           >
             <div class="text-yellow-400 text-4xl mb-4">
-              <i class="fas fa-server"></i>
+              <i class="fas fa-server shake-on-hover"></i>
             </div>
             <h3 class="text-xl font-bold mb-2">Hosting & Server</h3>
             <p class="text-sm">
@@ -605,10 +912,10 @@
 
           <!-- Layanan 3 -->
           <div
-            class="bg-gray-800 p-6 rounded-xl shadow-md text-center cursor-pointer hover:bg-gray-900 transition duration-300"
+            class="bg-gray-800 p-6 rounded-xl shadow-md text-center cursor-pointer hover:bg-gray-900 hover:shadow-yellow-400/30 transition duration-300 hover-parent"
           >
             <div class="text-yellow-400 text-4xl mb-4">
-              <i class="fas fa-network-wired"></i>
+              <i class="fas fa-network-wired grow-on-hover"></i>
             </div>
             <h3 class="text-xl font-bold mb-2">IT Infrastruktur</h3>
             <p class="text-sm">
@@ -619,10 +926,10 @@
 
           <!-- Layanan 4 -->
           <div
-            class="bg-gray-800 p-6 rounded-xl shadow-md text-center cursor-pointer hover:bg-gray-900 transition duration-300"
+            class="bg-gray-800 p-6 rounded-xl shadow-md text-center cursor-pointer hover:bg-gray-900 hover:shadow-yellow-400/30 transition duration-300 hover-parent"
           >
             <div class="text-yellow-400 text-4xl mb-4">
-              <i class="fas fa-user-shield"></i>
+              <i class="fas fa-user-shield pulse-on-hover"></i>
             </div>
             <h3 class="text-xl font-bold mb-2">Konsultasi IT</h3>
             <p class="text-sm">
@@ -633,10 +940,13 @@
 
           <!-- Layanan 5 -->
           <div
-            class="bg-gray-800 p-6 rounded-xl shadow-md text-center cursor-pointer hover:bg-gray-900 transition duration-300"
+            class="bg-gray-800 p-6 rounded-xl shadow-md text-center cursor-pointer hover:bg-gray-900 hover:shadow-yellow-400/30 transition duration-300 hover-parent"
           >
             <div class="text-yellow-400 text-4xl mb-4">
-              <i class="fas fa-cogs"></i>
+              <div class="gear-container">
+                <i class="fas fa-cog gear-left pr-0.5"></i>
+                <i class="fas fa-cog gear-right pl-0.5"></i>
+              </div>
             </div>
             <h3 class="text-xl font-bold mb-2">Sistem Informasi</h3>
             <p class="text-sm">
@@ -647,10 +957,10 @@
 
           <!-- Layanan 6 -->
           <div
-            class="bg-gray-800 p-6 rounded-xl shadow-md text-center cursor-pointer hover:bg-gray-900 transition duration-300"
+            class="bg-gray-800 p-6 rounded-xl shadow-md text-center cursor-pointer hover:bg-gray-900 hover:shadow-yellow-400/30 transition duration-300 hover-parent"
           >
             <div class="text-yellow-400 text-4xl mb-4">
-              <i class="fas fa-mobile-alt"></i>
+              <i class="fas fa-mobile-alt slide-up-on-hover"></i>
             </div>
             <h3 class="text-xl font-bold mb-2">Aplikasi Mobile</h3>
             <p class="text-sm">
@@ -669,7 +979,9 @@
     >
       <div class="container mx-auto px-6 mt-7">
         <div class="text-center mb-12">
-          <h2 class="text-2xl font-semibold mb-4 pt-6">Permintaan Layanan</h2>
+          <h2 class="text-2xl text-yellow-400 font-semibold mb-4 pt-6">
+            Permintaan Layanan
+          </h2>
           <p class="text-sm max-w-2xl mx-auto">
             Ajukan kebutuhan atau permintaan khusus Anda kepada tim kami. Kami
             akan segera menghubungi Anda kembali.
@@ -873,6 +1185,71 @@
           }
         });
       });
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const cards = document.querySelectorAll(".card-inner");
+
+        // Tangani klik pada card untuk flip
+        cards.forEach((card) => {
+          card.addEventListener("click", function (e) {
+            // Tutup card lain jika ada yang terbuka
+            cards.forEach((c) => {
+              if (c !== card) c.classList.remove("rotate-y-180");
+            });
+
+            card.classList.toggle("rotate-y-180");
+            e.stopPropagation(); // penting agar tidak ditangkap oleh listener luar
+          });
+        });
+
+        // Cegah flip saat <a> di dalam card diklik
+        const socialLinks = document.querySelectorAll(".card-inner a");
+        socialLinks.forEach((link) => {
+          link.addEventListener("click", function (e) {
+            e.stopPropagation(); // cegah event bubbling agar card tidak terkena efek klik luar
+          });
+        });
+
+        // Tangani klik di luar card untuk flip balik
+        document.addEventListener("click", function (e) {
+          cards.forEach((card) => {
+            card.classList.remove("rotate-y-180");
+          });
+        });
+      });
+    </script>
+    <script>
+      const images = [
+        document.getElementById("img1"),
+        document.getElementById("img2"),
+        document.getElementById("img3"),
+      ];
+      const fadeOverlay = document.getElementById("colorFade");
+
+      let currentIndex = 0;
+
+      function showNextImage() {
+        // Fade to black
+        fadeOverlay.classList.add("show");
+
+        setTimeout(() => {
+          // Sembunyikan semua gambar
+          images.forEach((img) => img.classList.remove("active"));
+
+          // Hitung indeks gambar berikutnya
+          currentIndex = (currentIndex + 1) % images.length;
+
+          // Tampilkan gambar baru
+          images[currentIndex].classList.add("active");
+
+          // Fade back
+          fadeOverlay.classList.remove("show");
+        }, 800); // durasi
+      }
+
+      // Jalankan setiap 4 detik
+      setInterval(showNextImage, 4000);
     </script>
   </body>
 </html>
