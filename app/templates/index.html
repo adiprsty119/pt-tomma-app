@@ -1,9 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html
+  lang="en"
+  x-data
+  x-init="$store.theme.isDark && document.documentElement.classList.add('dark')"
+>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Welcome!</title>
+
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='images/TOMMA.png') }}"
+    />
 
     <!-- Tailwind CSS -->
     <link
@@ -205,6 +216,20 @@
         overflow: visible;
       }
 
+      /* Ukuran untuk tablet */
+      @media (max-width: 768px) {
+        .image-wrapper {
+          width: 400px;
+        }
+      }
+
+      /* Ukuran untuk HP */
+      @media (max-width: 480px) {
+        .image-wrapper {
+          width: 300px;
+        }
+      }
+
       .fade-img {
         opacity: 0;
         transition: opacity 1s ease-in-out, transform 1s ease-in-out;
@@ -234,6 +259,10 @@
       .color-fade.show {
         opacity: 1;
       }
+
+      [x-cloak] {
+        display: none !important;
+      }
     </style>
   </head>
 
@@ -245,51 +274,195 @@
       x-data="{ open: false }"
     >
       <div
-        class="container mx-auto flex justify-between items-center py-6 px-6"
+        class="container mx-auto flex items-center justify-between py-6 px-6"
       >
         <div class="flex items-center space-x-2">
           <img
             src="{{ url_for('static', filename='images/TOMMA.png') }} "
             alt="TOMMA"
-            class="h-16 w-auto"
+            class="h-9 w-auto md:h-16"
           />
         </div>
 
-        <!-- Hamburger Icon (Mobile Only) -->
-        <button
-          @click="open = !open"
-          class="md:hidden text-white text-3xl focus:outline-none"
-          :aria-expanded="open.toString()"
-          aria-label="Toggle navigation menu"
-        >
-          <i
-            :class="open ? 'fa-solid fa-xmark cursor-pointer' : 'fa-solid fa-bars cursor-pointer'"
-          ></i>
-        </button>
+        <!-- Center: Search + Language (Mobile) -->
+        <div class="flex md:hidden items-center space-x-3">
+          <div class="relative w-40">
+            <input
+              type="text"
+              placeholder="Cari..."
+              class="px-3 py-1 rounded-full bg-gray-700 text-white text-sm placeholder-gray-400 w-full"
+            />
+            <div
+              class="absolute inset-y-0 right-3 flex items-center pointer-events-none"
+            >
+              <i class="fas fa-search text-gray-400 text-sm"></i>
+            </div>
+          </div>
+
+          <!-- Language Selector -->
+          <div x-data="{ open: false }" class="relative">
+            <!-- Tombol Bahasa -->
+            <button
+              @click="open = !open"
+              class="bg-yellow-400 text-gray-900 font-semibold px-3 py-1.5 rounded-md hover:bg-yellow-300 transition text-sm flex items-center gap-1 cursor-pointer"
+            >
+              EN
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fill-rule="evenodd"
+                  d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div
+              x-show="open"
+              @click.away="open = false"
+              x-transition
+              class="absolute right-0 mt-2 w-28 bg-white border border-gray-200 rounded-md shadow-md z-50"
+            >
+              <a
+                href="#"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-100"
+              >
+                Bahasa
+              </a>
+              <a
+                href="#"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-100"
+              >
+                English
+              </a>
+            </div>
+          </div>
+
+          <!-- Hamburger Icon (Mobile Only) -->
+          <button
+            @click="open = !open"
+            class="md:hidden text-white text-3xl focus:outline-none"
+            :aria-expanded="open.toString()"
+            aria-label="Toggle navigation menu"
+          >
+            <i
+              :class="open ? 'fa-solid fa-xmark cursor-pointer' : 'fa-solid fa-bars cursor-pointer'"
+            ></i>
+          </button>
+        </div>
 
         <!-- Desktop Navigation -->
-        <nav class="hidden md:flex space-x-4">
-          <a href="#home" class="hover:text-yellow-400 text-xl">Beranda</a>
-          <a href="#news" class="hover:text-yellow-400 text-xl">Berita</a>
-          <a href="#portfolio" class="hover:text-yellow-400 text-xl"
-            >Portfolio</a
-          >
-          <a href="#about" class="hover:text-yellow-400 text-xl"
-            >Tentang Kami</a
-          >
-          <a href="#developer" class="hover:text-yellow-400 text-xl"
-            >Pengembang</a
-          >
-          <a href="#services" class="hover:text-yellow-400 text-xl">Layanan</a>
-          <a href="#request" class="hover:text-yellow-400 text-xl"
-            >Permintaan</a
-          >
-        </nav>
+        <div class="hidden md:flex items-center space-x-6">
+          <nav class="flex space-x-4">
+            <a href="#home" class="hover:text-yellow-400 text-xl">Beranda</a>
+            <a href="#news" class="hover:text-yellow-400 text-xl">Berita</a>
+            <a href="#portfolio" class="hover:text-yellow-400 text-xl"
+              >Portfolio</a
+            >
+            <a href="#about" class="hover:text-yellow-400 text-xl"
+              >Tentang Kami</a
+            >
+            <a href="#developer" class="hover:text-yellow-400 text-xl"
+              >Pengembang</a
+            >
+            <a href="#services" class="hover:text-yellow-400 text-xl"
+              >Layanan</a
+            >
+            <a href="#request" class="hover:text-yellow-400 text-xl"
+              >Permintaan</a
+            >
+          </nav>
+
+          <!-- Search + Language (Desktop) -->
+          <div class="flex items-center space-x-3">
+            <div class="relative">
+              <input
+                type="text"
+                placeholder="Cari..."
+                class="pl-4 pr-10 py-2 rounded-full bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              />
+              <div
+                class="absolute inset-y-0 right-3 flex items-center pointer-events-none"
+              >
+                <i class="fas fa-search text-gray-400 text-sm"></i>
+              </div>
+            </div>
+
+            <!-- Language Selector -->
+            <div x-data="{ open: false }" class="relative">
+              <!-- Tombol Bahasa -->
+              <button
+                @click="open = !open"
+                class="bg-yellow-400 text-gray-900 font-semibold px-3 py-1.5 rounded-md hover:bg-yellow-300 transition text-sm flex items-center gap-1 cursor-pointer"
+              >
+                EN
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fill-rule="evenodd"
+                    d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+
+              <!-- Dropdown Menu -->
+              <div
+                x-show="open"
+                @click.away="open = false"
+                x-transition
+                class="absolute right-0 mt-2 w-28 bg-white border border-gray-200 rounded-md shadow-md z-50"
+              >
+                <a
+                  href="#"
+                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-100"
+                >
+                  Bahasa
+                </a>
+                <a
+                  href="#"
+                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-100"
+                >
+                  English
+                </a>
+              </div>
+            </div>
+
+            <!-- Dark Mode Toggle -->
+            <button
+              x-data
+              @click="$store.theme.toggle()"
+              :title="$store.theme.isDark ? 'Beralih ke Dark Mode' : 'Beralih ke Light Mode'"
+              class="relative w-[80px] flex justify-center items-center bg-gray-800 dark:bg-yellow-400 text-yellow-300 dark:text-gray-900 px-0.5 py-1.5 rounded-md text-sm font-semibold transition hover:brightness-110 cursor-pointer"
+            >
+              <template
+                x-if="$store.theme.isDark"
+                class="absolute inset-0 flex justify-center items-center transition-opacity duration-300"
+                x-transition:enter="opacity-0"
+                x-transition:enter-end="opacity-100"
+                x-transition:leave="opacity-100"
+                x-transition:leave-end="opacity-0"
+              >
+                <span><i class="fas fa-sun"></i> Light</span>
+              </template>
+              <template
+                x-if="!$store.theme.isDark"
+                class="absolute inset-0 flex justify-center items-center transition-opacity duration-300"
+                x-transition:enter="opacity-0"
+                x-transition:enter-end="opacity-100"
+                x-transition:leave="opacity-100"
+                x-transition:leave-end="opacity-0"
+              >
+                <span><i class="fas fa-moon"></i> Dark</span>
+              </template>
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Mobile Navigation Menu -->
       <div
         x-show="open"
+        x-cloak
         x-transition:enter="transition ease-out duration-200"
         x-transition:enter-start="opacity-0 scale-95"
         x-transition:enter-end="opacity-100 scale-100"
@@ -991,8 +1164,8 @@
         <!-- Form -->
         <form
           class="max-w-3xl mx-auto bg-gray-900 p-8 rounded-xl shadow-lg space-y-6 hover:shadow-yellow-400/30 transition"
-          action="#"
-          method="POST"
+          action="/request"
+          method="post"
         >
           <!-- Nama -->
           <div class="text-left">
@@ -1024,35 +1197,50 @@
             />
           </div>
 
+          <!-- Nomor HP -->
+          <div class="text-left">
+            <label class="block text-sm font-medium mb-2" for="email"
+              >Nomor HP</label
+            >
+            <input
+              type="text"
+              id="nomor_hp"
+              name="nomor_hp"
+              required
+              class="w-full px-4 py-3 rounded-md bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              placeholder="081..."
+            />
+          </div>
+
           <!-- Jenis Layanan -->
           <div class="text-left">
-            <label class="block text-sm font-medium mb-2" for="service"
+            <label class="block text-sm font-medium mb-2" for="tipe_aplikasi"
               >Jenis Layanan</label
             >
             <select
-              id="service"
-              name="service"
+              id="tipe_aplikasi"
+              name="tipe_aplikasi"
               required
               class="w-full px-4 py-3 rounded-md bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
             >
               <option value="">-- Pilih Layanan --</option>
-              <option>Pengembangan Website</option>
-              <option>Hosting & Server</option>
-              <option>Konsultasi IT</option>
-              <option>Infrastruktur Jaringan</option>
-              <option>Aplikasi Mobile</option>
-              <option>Layanan Lainnya</option>
+              <option value="website">Pengembangan Website</option>
+              <option value="hosting-server">Hosting & Server</option>
+              <option value="konsultasi">Konsultasi IT</option>
+              <option value="network">Infrastruktur Jaringan</option>
+              <option value="mobile-app">Aplikasi Mobile</option>
+              <option value="other">Layanan Lainnya</option>
             </select>
           </div>
 
           <!-- Pesan -->
           <div class="text-left">
-            <label class="block text-sm font-medium mb-2" for="message"
+            <label class="block text-sm font-medium mb-2" for="deskripsi"
               >Pesan / Detail Permintaan</label
             >
             <textarea
-              id="message"
-              name="message"
+              id="deskripsi"
+              name="deskripsi"
               rows="5"
               required
               class="w-full px-4 py-3 rounded-md bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
@@ -1144,6 +1332,22 @@
         </div>
       </div>
 
+      <!-- Dark Mode Toggle (Mobile) -->
+      <div class="fixed bottom-4 right-4 z-[9999] md:hidden" x-data>
+        <button
+          @click="$store.theme.toggle()"
+          class="w-14 h-14 flex justify-center items-center bg-gray-800 dark:bg-yellow-400 text-yellow-300 dark:text-gray-900 rounded-full shadow-lg transition hover:brightness-110 cursor-pointer"
+          aria-label="Toggle Dark Mode"
+        >
+          <template x-if="$store.theme.isDark">
+            <i class="fas fa-sun text-xl"></i>
+          </template>
+          <template x-if="!$store.theme.isDark">
+            <i class="fas fa-moon text-xl"></i>
+          </template>
+        </button>
+      </div>
+
       <!-- Batas -->
       <div
         class="mt-10 border-t border-gray-700 pt-6 text-center text-sm text-gray-500"
@@ -1156,12 +1360,30 @@
     {% include 'script_animation.html' %}
 
     <script>
-      $(document).ready(function () {
-        // Smooth scroll
+      // === Alpine Dark Mode ===
+      document.addEventListener("alpine:init", () => {
+        Alpine.store("theme", {
+          isDark: localStorage.getItem("theme") === "dark",
+          toggle() {
+            this.isDark = !this.isDark;
+            localStorage.setItem("theme", this.isDark ? "dark" : "light");
+            document.documentElement.classList.toggle("dark", this.isDark);
+          },
+        });
+
+        // Terapkan dark mode saat halaman dimuat
+        if (localStorage.getItem("theme") === "dark") {
+          document.documentElement.classList.add("dark");
+        }
+      });
+
+      // === Fitur lain dijalankan saat DOM siap ===
+      document.addEventListener("DOMContentLoaded", function () {
+        // === Smooth Scroll ===
         $('a[href^="#"]').on("click", function (e) {
           e.preventDefault();
-          var target = this.hash;
-          var $target = $(target);
+          const target = this.hash;
+          const $target = $(target);
 
           $("html, body").stop().animate(
             {
@@ -1172,9 +1394,8 @@
           );
         });
 
-        // Transparent header on scroll
+        // === Transparent Header on Scroll ===
         $(window).on("scroll", function () {
-          console.log("Scroll posisi:", window.scrollY); // DEBUG
           const header = document.getElementById("main-header");
           if (window.scrollY > 10) {
             header.classList.remove("bg-opacity-100");
@@ -1184,72 +1405,54 @@
             header.classList.add("bg-opacity-100");
           }
         });
-      });
-    </script>
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
+
+        // === Flip Card Interaction ===
         const cards = document.querySelectorAll(".card-inner");
 
-        // Tangani klik pada card untuk flip
         cards.forEach((card) => {
           card.addEventListener("click", function (e) {
-            // Tutup card lain jika ada yang terbuka
             cards.forEach((c) => {
               if (c !== card) c.classList.remove("rotate-y-180");
             });
-
             card.classList.toggle("rotate-y-180");
-            e.stopPropagation(); // penting agar tidak ditangkap oleh listener luar
+            e.stopPropagation();
           });
         });
 
-        // Cegah flip saat <a> di dalam card diklik
         const socialLinks = document.querySelectorAll(".card-inner a");
         socialLinks.forEach((link) => {
           link.addEventListener("click", function (e) {
-            e.stopPropagation(); // cegah event bubbling agar card tidak terkena efek klik luar
+            e.stopPropagation();
           });
         });
 
-        // Tangani klik di luar card untuk flip balik
-        document.addEventListener("click", function (e) {
+        document.addEventListener("click", function () {
           cards.forEach((card) => {
             card.classList.remove("rotate-y-180");
           });
         });
+
+        // === Slider Gambar Otomatis ===
+        const images = [
+          document.getElementById("img1"),
+          document.getElementById("img2"),
+          document.getElementById("img3"),
+        ];
+        const fadeOverlay = document.getElementById("colorFade");
+        let currentIndex = 0;
+
+        function showNextImage() {
+          fadeOverlay.classList.add("show");
+          setTimeout(() => {
+            images.forEach((img) => img.classList.remove("active"));
+            currentIndex = (currentIndex + 1) % images.length;
+            images[currentIndex].classList.add("active");
+            fadeOverlay.classList.remove("show");
+          }, 800);
+        }
+
+        setInterval(showNextImage, 4000);
       });
-    </script>
-    <script>
-      const images = [
-        document.getElementById("img1"),
-        document.getElementById("img2"),
-        document.getElementById("img3"),
-      ];
-      const fadeOverlay = document.getElementById("colorFade");
-
-      let currentIndex = 0;
-
-      function showNextImage() {
-        // Fade to black
-        fadeOverlay.classList.add("show");
-
-        setTimeout(() => {
-          // Sembunyikan semua gambar
-          images.forEach((img) => img.classList.remove("active"));
-
-          // Hitung indeks gambar berikutnya
-          currentIndex = (currentIndex + 1) % images.length;
-
-          // Tampilkan gambar baru
-          images[currentIndex].classList.add("active");
-
-          // Fade back
-          fadeOverlay.classList.remove("show");
-        }, 800); // durasi
-      }
-
-      // Jalankan setiap 4 detik
-      setInterval(showNextImage, 4000);
     </script>
   </body>
 </html>
