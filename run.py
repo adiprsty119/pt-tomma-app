@@ -1,17 +1,20 @@
-from flask import Flask, request, render_template, request as flask_request, redirect, url_for, flash, session
+from flask import Flask, request, render_template, request as flask_request, redirect, url_for, flash, session, jsonify
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import create_app, db
 from app.models import Request, Users
 from flask_mail import Mail, Message
+from twilio.rest import Client
 from authlib.integrations.flask_client import OAuth
+from markupsafe import escape
+from datetime import datetime, timedelta
 import random
 import logging
-from markupsafe import escape
+import secrets
+import time
 import os
 import re
 from dotenv import load_dotenv
-load_dotenv()
 
 app = create_app()
 
@@ -23,6 +26,38 @@ app.config['MAIL_USE_SSL'] = True
 app.config['MAIL_USERNAME'] = 'adip98816@gmail.com'
 app.config['MAIL_PASSWORD'] = 'aiacumtbxgiyssuc'
 mail = Mail(app)
+
+# Whatsapp OTP
+load_dotenv()
+account_sid = os.getenv("TWILIO_ACCOUNT_SID")
+auth_token = os.getenv("TWILIO_AUTH_TOKEN")
+client = Client(account_sid, auth_token)
+
+def send_whatsapp_code(phone, code):
+    account_sid = os.getenv("TWILIO_ACCOUNT_SID")
+    auth_token = os.getenv("TWILIO_AUTH_TOKEN")
+    client = Client(account_sid, auth_token)
+    message_body = f"Kode verifikasi Anda adalah: *{code}*.\nJangan bagikan kode ini kepada siapa pun."
+    try:
+        message = client.messages.create(
+            body=message_body,
+            from_='whatsapp:+14155238886',
+            to=f'whatsapp:{phone}'
+        )
+        print("Pesan berhasil dikirim:", message.sid)
+    except Exception as e:
+        print("Gagal mengirim pesan:", e)
+
+def normalize_phone_number(phone):
+    phone = phone.strip()
+    if phone.startswith('0'):
+        return '+62' + phone[1:]
+    elif phone.startswith('+62'):
+        return phone
+    elif phone.startswith('62'):
+        return '+' + phone
+    else:
+        return phone
 
 # Google OAuth Config
 oauth = OAuth(app)
@@ -161,6 +196,171 @@ def register():
             flash("Email Anda telah terdaftar.", "danger")
         return redirect(url_for('register'))
     return render_template('register.html')
+
+# Endpoint Find Account
+@app.route('/find_account/', methods=['GET', 'POST'])
+def find_account():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        phone = request.form.get('no-hp')
+        # Pastikan username diisi
+        if not username:
+            flash('Username wajib diisi.', 'danger')
+            return redirect(url_for('find_account'))
+
+        # ===== Kondisi 1: Username + Email =====
+        if email and not phone:
+            # Validasi format email
+            email_pattern = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
+            if not re.match(email_pattern, email):
+                flash('Alamat email tidak valid.', 'danger')
+                return redirect(url_for('find_account'))
+            user_exists = check_username_in_db(username)
+            email_exists = check_email_in_db(email)
+
+            if user_exists and email_exists:
+                verification_code = generate_verification_code()
+                session['verification_code'] = verification_code
+                session['verification_code_expiry'] = time.time() + 180
+                session['username'] = username
+                # Kirim kode via email
+                msg = Message('Verifikasi Akun Anda',
+                              sender='adip98816@gmail.com',
+                              recipients=[email])
+                safe_code = escape(verification_code)
+                msg.html = f"""
+                <p>Halo,</p>
+                <p>Berikut adalah kode verifikasi 6 digit untuk mengakses akun Anda:</p>
+                <h2>{safe_code}</h2>
+                <p>Atau klik <a href="{url_for('verify_code', _external=True)}" style="color: blue;">link ini</a> untuk melanjutkan.</p>
+                """
+                mail.send(msg)
+                flash(f'Kode verifikasi telah dikirim ke email {escape(email)}', 'success')
+                return redirect(url_for('verify_code'))
+            elif not user_exists and not email_exists:
+                flash('Username dan email tidak ditemukan.', 'danger')
+            elif not user_exists:
+                flash('Username tidak ditemukan.', 'danger')
+            elif not email_exists:
+                flash('Email tidak ditemukan.', 'danger')
+    
+        # ===== Kondisi 2: Username + Nomor HP =====
+        elif phone and not email:
+            normalized_phone = normalize_phone_number(phone)
+            phone_pattern = r'^\+628\d{7,12}$'
+            if not re.match(phone_pattern, normalized_phone):
+                flash('Format nomor HP tidak valid. Gunakan nomor Indonesia.', 'danger')
+                return redirect(url_for('find_account'))
+            # Cek keberadaan username dan nomor HP di database
+            user_exists = check_username_in_db(username)
+            hp_exists = check_phone_in_db(normalized_phone)
+            if user_exists and hp_exists:
+                verification_code = generate_verification_code()
+                session['verification_code'] = verification_code
+                session['verification_code_expiry'] = time.time() + 180  # berlaku 3 menit
+                session['username'] = username
+                session['phone'] = normalized_phone
+                send_whatsapp_code(normalized_phone, verification_code)
+                flash(f'Kode verifikasi telah dikirim ke nomor WhatsApp {normalized_phone}', 'success')
+                return redirect(url_for('verify_code'))
+            # Penanganan error spesifik
+            if not user_exists and not hp_exists:
+                flash('Username dan nomor HP tidak ditemukan.', 'danger')
+            elif not user_exists:
+                flash('Username tidak ditemukan.', 'danger')
+            elif not hp_exists:
+                flash('Nomor HP tidak ditemukan.', 'danger')
+            return redirect(url_for('find_account'))
+        else:
+            flash('Harap isi email atau nomor HP.', 'danger')
+        return redirect(url_for('find_account'))
+    return render_template('find_account.html')
+
+# Endpoint untuk verify_code
+@app.route('/verify_code/', methods=['GET', 'POST'])
+def verify_code():
+    if request.method == 'GET':
+        expiry_time = session.get('verification_code_expiry', 0)
+        return render_template('verify_code.html', expiry_time=int(expiry_time))
+    # Metode untuk memproses data JSON
+    expiry_time = session.get('verification_code_expiry', 0)
+    data = request.get_json()
+    if not data or 'verification_code' not in data:
+        return jsonify({'message': 'Verification code is required.'}), 400
+    code = data['verification_code']
+    if time.time() > expiry_time:
+        return jsonify({'message': 'Verification code has expired.'}), 400
+    if 'verification_code' in session and session['verification_code'] == int(code):
+        # Generate reset token dan set waktu kedaluwarsa
+        reset_token = secrets.token_hex(16)
+        expiry_time = datetime.now() + timedelta(minutes=10)
+        username = session.get('username')
+        user = Users.query.filter_by(username=username).first()
+        if not user:
+            return jsonify({'message': 'User not found.'}), 404
+        # Simpan token dan waktu kedaluwarsa di database lalu sertakan URL reset password dengan token
+        user.reset_token = reset_token
+        user.token_exp = expiry_time
+        db.session.commit()
+        reset_password_url = escape(url_for('reset_password', token=reset_token, _external=True))
+        return jsonify({
+            'message': 'Verification successful.',
+            'redirect_url': reset_password_url
+        }), 200
+    else:
+        return jsonify({'message': 'Incorrect verification code.'}), 400
+
+# Endpoint Reset Password
+@app.route('/reset_password/', methods=['GET', 'POST'])
+def reset_password():
+    if request.method == 'GET':
+        reset_token = request.args.get('token')
+        if not reset_token:
+            return jsonify({'error': "Token tidak ditemukan."}), 400
+        # Validasi token
+        user = Users.query.filter_by(reset_token=reset_token).first()
+        if not user or datetime.now() > user.token_exp:
+            if user:
+                user.reset_token = None
+                user.token_exp = None
+                db.session.commit()
+            return jsonify({'error': "Token tidak valid atau telah kedaluwarsa."}), 400
+        # Jika token valid, arahkan ke halaman reset password
+        return render_template('reset_password.html', token=escape(reset_token))
+    if request.method == 'POST':
+        data = request.get_json()
+        reset_token = data.get('reset_token')
+        new_password = data.get('new_password')
+        confirm_password = data.get('confirm_password')
+        # Debug input
+        print(f"Reset token: {reset_token}, Password baru: {new_password}")
+        # Validasi input
+        if not reset_token or not new_password or not confirm_password:
+            return jsonify({'error': "Semua data harus diisi."}), 400
+        # Validasi pola password
+        password_pattern = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+        if not re.match(password_pattern, new_password):
+            return jsonify({'error': "Password harus terdiri dari minimal 8 karakter, termasuk huruf besar, kecil, angka, dan simbol."}), 400
+        if new_password != confirm_password:
+            return jsonify({'error': "Password dan konfirmasi password tidak cocok."}), 400
+        # Validasi token
+        user = Users.query.filter_by(reset_token=reset_token).first()
+        if not user:
+            return jsonify({'error': "Token reset password tidak valid."}), 400
+        if datetime.now() > user.token_exp:
+            user.reset_token = None
+            user.token_exp = None
+            db.session.commit()
+            return jsonify({'error': "Token reset password telah kedaluwarsa."}), 400
+        # Update password
+        hashed_password = generate_password_hash(new_password, method='pbkdf2:sha256', salt_length=16)
+        user.password = hashed_password
+        user.reset_token = None
+        user.token_exp = None
+        db.session.commit()
+        print("Password berhasil diubah.")
+        return jsonify({'message': "Password Anda telah berhasil diubah!"}), 200
 
 @app.route("/index/")
 def index():
