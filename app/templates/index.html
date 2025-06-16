@@ -9,17 +9,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Welcome!</title>
 
-    <!-- Favicon -->
-    <link
-      rel="icon"
-      type="image/png"
-      href="{{ url_for('static', filename='images/TOMMA.png') }}"
-    />
-
     <!-- Tailwind CSS -->
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/output.css') }}"
+    />
+
+    <!-- Vanila CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
     />
 
     <!-- Animate.css -->
@@ -38,232 +37,18 @@
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
     />
 
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='images/TOMMA.png') }}"
+    />
+
     <!-- Alpine.js -->
     <script
       defer
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
     ></script>
-
-    <!-- Style 3D Rotate -->
-    <style>
-      .perspective {
-        perspective: 1000px;
-      }
-      .transform-style {
-        transform-style: preserve-3d;
-      }
-      .backface-hidden {
-        backface-visibility: hidden;
-      }
-      .rotate-y-180 {
-        transform: rotateY(180deg);
-      }
-
-      /* Animasi ikon gear berputar */
-      @keyframes spin-clockwise {
-        from {
-          transform: rotate(0deg);
-        }
-        to {
-          transform: rotate(360deg);
-        }
-      }
-
-      @keyframes spin-counter {
-        from {
-          transform: rotate(0deg);
-        }
-        to {
-          transform: rotate(-360deg);
-        }
-      }
-
-      .gear-container {
-        position: relative;
-        display: inline-block;
-        width: 2.5rem;
-        height: 2.5rem;
-      }
-
-      .gear-left,
-      .gear-right {
-        position: absolute;
-        font-size: 1.5rem;
-        color: #facc15; /* Tailwind yellow-400 */
-      }
-
-      .gear-left {
-        top: -0.3rem;
-        left: -0.6rem;
-      }
-
-      .gear-right {
-        top: 0.3rem;
-        left: 0.6rem;
-      }
-
-      /* Animasi ikon bergoyang kiri-kanan */
-      @keyframes shake-icon {
-        0%,
-        100% {
-          transform: translateX(0);
-        }
-        25% {
-          transform: translateX(-4px);
-        }
-        75% {
-          transform: translateX(4px);
-        }
-      }
-
-      /* Animasi ikon naik-turun */
-      @keyframes bounce-icon {
-        0%,
-        100% {
-          transform: translateY(0);
-        }
-        50% {
-          transform: translateY(-5px);
-        }
-      }
-
-      @keyframes grow-icon {
-        0% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.2);
-        }
-        100% {
-          transform: scale(1);
-        }
-      }
-
-      @keyframes pulse-icon {
-        0% {
-          transform: scale(1);
-          opacity: 1;
-        }
-        50% {
-          transform: scale(1.1);
-          opacity: 0.8;
-        }
-        100% {
-          transform: scale(1);
-          opacity: 1;
-        }
-      }
-
-      @keyframes slide-up-icon {
-        0% {
-          transform: translateY(0);
-        }
-        50% {
-          transform: translateY(-8px);
-        }
-        100% {
-          transform: translateY(0);
-        }
-      }
-
-      /* Utilitas */
-      .hover-parent:hover .gear-left {
-        animation: spin-clockwise 0.8s linear;
-        animation-iteration-count: 1;
-        animation-fill-mode: both;
-      }
-
-      .hover-parent:hover .gear-right {
-        animation: spin-counter 0.8s linear;
-        animation-iteration-count: 1;
-        animation-fill-mode: both;
-      }
-
-      .hover-parent:hover .shake-on-hover {
-        animation: shake-icon 0.6s ease-in-out infinite;
-        animation-iteration-count: 1;
-        animation-fill-mode: both;
-      }
-
-      .hover-parent:hover .bounce-on-hover {
-        animation: bounce-icon 0.6s ease-in-out infinite;
-        animation-iteration-count: 1;
-        animation-fill-mode: both;
-      }
-
-      .hover-parent:hover .grow-on-hover {
-        animation: grow-icon 0.6s ease-in-out;
-        animation-iteration-count: 1;
-        animation-fill-mode: both;
-      }
-
-      .hover-parent:hover .pulse-on-hover {
-        animation: pulse-icon 0.6s ease-in-out;
-        animation-iteration-count: 1;
-        animation-fill-mode: both;
-      }
-
-      .hover-parent:hover .slide-up-on-hover {
-        animation: slide-up-icon 0.6s ease-out;
-        animation-iteration-count: 1;
-        animation-fill-mode: both;
-      }
-
-      .image-wrapper {
-        position: relative;
-        width: 550px;
-        height: auto;
-        overflow: visible;
-      }
-
-      /* Ukuran untuk tablet */
-      @media (max-width: 768px) {
-        .image-wrapper {
-          width: 400px;
-        }
-      }
-
-      /* Ukuran untuk HP */
-      @media (max-width: 480px) {
-        .image-wrapper {
-          width: 300px;
-        }
-      }
-
-      .fade-img {
-        opacity: 0;
-        transition: opacity 1s ease-in-out, transform 1s ease-in-out;
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 10;
-      }
-
-      .fade-img.active {
-        opacity: 1;
-        position: relative;
-        z-index: 15;
-      }
-
-      .color-fade {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(135deg, #facc15, #ec4899, #6366f1);
-        opacity: 0;
-        z-index: 20;
-        pointer-events: none;
-        transition: opacity 0.5s ease-in-out;
-        mix-blend-mode: screen; /* Optional: agar lebih menyatu */
-      }
-
-      .color-fade.show {
-        opacity: 1;
-      }
-
-      [x-cloak] {
-        display: none !important;
-      }
-    </style>
   </head>
 
   <body class="bg-background-dark text-white font-sans scroll-smooth">
@@ -455,6 +240,30 @@
                 <span><i class="fas fa-moon"></i> Dark</span>
               </template>
             </button>
+
+            <!-- Notifikasi -->
+            <button
+              title="Notifikasi"
+              class="relative flex items-center justify-center text-yellow-400 hover:text-yellow-300 transition text-2xl cursor-pointer mr-4 ml-5"
+            >
+              <i class="fas fa-bell"></i>
+              <!-- Badge (Opsional) -->
+              <span
+                class="absolute -top-1 -right-1 text-[10px] bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center font-semibold"
+              >
+                3
+              </span>
+            </button>
+
+            <!-- Sign Up -->
+            <a
+              href="/login/"
+              class="flex items-center justify-center gap-1 text-yellow-400 hover:text-yellow-300 transition text-2xl"
+              title="Daftar Akun"
+            >
+              <i class="fas fa-user-plus"></i>
+              <span class="sr-only">Sign Up</span>
+            </a>
           </div>
         </div>
       </div>
@@ -542,7 +351,7 @@
             class="text-2xl mt-6 md:text-5xl font-extrabold mb-6 leading-tight"
           >
             Selamat Datang di
-            <span class="text-yellow-400">TOMMA CAHAYA NUSANTARA</span>
+            <span class="text-yellow-400">TOMA CAHAYA NUSANTARA</span>
           </h2>
           <p class="text-sm md:text-xl mb-6">
             Kami adalah perusahaan IT yang berkomitmen membantu Anda dalam
@@ -893,7 +702,7 @@
                   class="w-44 h-44 rounded-full object-cover mb-4"
                 />
                 <h3 class="text-xl font-bold">Rizky Pattiasina</h3>
-                <h4 class="text-yellow-400 text-sm mt-1">Direktur PT TOMMA</h4>
+                <h4 class="text-yellow-400 text-sm mt-1">Direktur PT TOMA</h4>
                 <div
                   class="flex justify-center space-x-4 text-lg text-white mt-8"
                 >
@@ -970,7 +779,7 @@
                 />
                 <h3 class="text-xl font-bold">Adi Prasetyo</h3>
                 <h4 class="text-yellow-400 text-sm mt-1">
-                  Wakil Direktur PT. TOMMA
+                  Wakil Direktur PT. TOMA
                 </h4>
                 <div
                   class="flex justify-center space-x-4 text-lg text-white mt-8"
@@ -1164,7 +973,7 @@
         <!-- Form -->
         <form
           class="max-w-3xl mx-auto bg-gray-900 p-8 rounded-xl shadow-lg space-y-6 hover:shadow-yellow-400/30 transition"
-          action="/request"
+          action="/request/"
           method="post"
         >
           <!-- Nama -->
@@ -1208,7 +1017,7 @@
               name="nomor_hp"
               required
               class="w-full px-4 py-3 rounded-md bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-              placeholder="081..."
+              placeholder="0812xxxxxxxx"
             />
           </div>
 
@@ -1252,6 +1061,7 @@
           <div class="text-center">
             <button
               type="submit"
+              id="submitBtn"
               class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold px-6 py-3 rounded-md shadow-md transition duration-300 cursor-pointer"
             >
               Kirim Permintaan
@@ -1269,7 +1079,7 @@
         <!-- Logo / Perusahaan -->
         <div>
           <h3 class="text-2xl font-bold mb-4 text-yellow-400">
-            PT. TOMMA CAHAYA NUSANTARA
+            PT. TOMA CAHAYA NUSANTARA
           </h3>
           <p class="text-sm text-gray-400">
             Solusi IT terpercaya dari Papua Selatan. Fokus pada pengembangan
@@ -1348,11 +1158,69 @@
         </button>
       </div>
 
+      <!-- Overlay Error -->
+      <div
+        id="overlay-error"
+        class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm items-center justify-center px-4"
+      >
+        <div
+          class="bg-white text-red-600 w-full max-w-md p-6 rounded-2xl shadow-2xl border border-red-200 animate-fade-in"
+        >
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold">Terjadi Kesalahan</h2>
+            <button
+              onclick="closeError()"
+              class="text-red-500 text-3xl hover:text-red-700 transition cursor-pointer"
+            >
+              &times;
+            </button>
+          </div>
+          <p id="error-message" class="text-sm text-gray-700 mb-6">
+            Pesan error muncul di sini
+          </p>
+          <button
+            onclick="closeError()"
+            class="w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition duration-200 cursor-pointer"
+          >
+            Tutup
+          </button>
+        </div>
+      </div>
+
+      <!-- Error Flash Message -->
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div
+        class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center px-4"
+      >
+        <div
+          class="w-full max-w-md p-6 rounded-2xl shadow-2xl border animate-fade-in {% if category == 'success' %} bg-green-100 text-green-700 border-green-300 {% else %} bg-red-100 text-red-700 border-red-300 {% endif %}"
+        >
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold">Notifikasi</h2>
+            <button
+              onclick="this.closest('.fixed').classList.add('hidden')"
+              class="text-3xl hover:text-gray-700 transition cursor-pointer"
+            >
+              &times;
+            </button>
+          </div>
+          <p class="text-sm text-gray-700 mb-6">{{ message }}</p>
+          <button
+            onclick="this.closest('.fixed').classList.add('hidden')"
+            class="w-full py-2 px-4 {% if category == 'success' %} bg-green-600 hover:bg-green-700 {% else %} bg-red-600 hover:bg-red-700 {% endif %} text-white font-medium rounded-lg transition duration-200 cursor-pointer"
+          >
+            Tutup
+          </button>
+        </div>
+      </div>
+      {% endfor %} {% endif %} {% endwith %}
+
       <!-- Batas -->
       <div
         class="mt-10 border-t border-gray-700 pt-6 text-center text-sm text-gray-500"
       >
-        &copy; 2025 TOMMA OFFICIAL. All rights reserved.
+        &copy; 2025 TOMA OFFICIAL. All rights reserved.
       </div>
     </footer>
 
@@ -1452,6 +1320,97 @@
         }
 
         setInterval(showNextImage, 4000);
+      });
+    </script>
+    <script>
+      function showError(message) {
+        const overlay = document.getElementById("overlay-error");
+        const errorMsg = document.getElementById("error-message");
+
+        errorMsg.textContent = message;
+        overlay.classList.remove("hidden");
+        overlay.classList.add("flex");
+        document.body.classList.add("blurred", "overflow-hidden");
+      }
+
+      function closeError() {
+        const overlay = document.getElementById("overlay-error");
+
+        overlay.classList.remove("flex");
+        overlay.classList.add("hidden");
+        document.body.classList.remove("blurred", "overflow-hidden");
+      }
+
+      document.querySelector("form").addEventListener("submit", function (e) {
+        const email = document.getElementById("email").value;
+        const nomor_hp = document.getElementById("nomor_hp").value;
+        const btn = document.getElementById("submitBtn");
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const hpRegex = /^(08\d{8,11}|\+628\d{7,10})$/;
+        const validPrefixes = [
+          "0811",
+          "0812",
+          "0813",
+          "0821",
+          "0822",
+          "0823",
+          "0851",
+          "0852",
+          "0853",
+          "0817",
+          "0818",
+          "0819",
+          "0857",
+          "0858",
+          "0896",
+          "0897",
+          "0898",
+          "0899",
+        ];
+
+        // Validasi email
+        if (!emailRegex.test(email)) {
+          e.preventDefault();
+          showError("Email tidak valid!");
+          return;
+        }
+
+        // Normalisasi nomor: ubah +628xxxx jadi 08xxxx
+        if (nomor_hp.startsWith("+62")) {
+          nomor_hp = "0" + nomor_hp.slice(3);
+        }
+
+        // Validasi Nomor HP Format Dasar
+        if (!hpRegex.test(nomor_hp)) {
+          e.preventDefault();
+          showError(
+            "Nomor HP harus dimulai dengan 08 atau +628, panjang 10-13 digit!"
+          );
+          return;
+        }
+
+        // Validasi Prefix Provider
+        const prefix = nomor_hp.substring(0, 4);
+        if (!validPrefixes.includes(prefix)) {
+          e.preventDefault();
+          showError(
+            "Prefix nomor HP tidak dikenal. Periksa kembali nomor Anda."
+          );
+          return;
+        }
+
+        // Validasi Dummy Number
+        if (/^(0+|08[0-9]{7}1234|08[0-9]{9}000)$/.test(nomor_hp)) {
+          e.preventDefault();
+          showError("Nomor HP tampaknya tidak valid!");
+          return;
+        }
+
+        // Jika lolos validasi, ubah teks tombol submit
+        if (btn) {
+          btn.disabled = true;
+          btn.innerText = "Mengirim...";
+        }
       });
     </script>
   </body>
