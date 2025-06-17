@@ -23,18 +23,18 @@
 
   <body class="font-sans bg-gray-100 m-0 p-0 flex justify-center items-center">
     <div
-      class="bg-white mt-8 p-10 md:px-16 rounded-[12px] shadow-lg w-full max-w-[35rem]"
+      class="bg-white mt-24 p-10 md:px-16 rounded-[12px] shadow-lg w-full max-w-[35rem]"
     >
       <h1
         class="text-center text-gray-800 mb-12 text-3xl md:text-2xl font-semibold"
       >
-        Login Account
+        Masuk ke Akun
       </h1>
 
       <!-- Social Account Login -->
       <div class="flex flex-row justify-between gap-2 mt-9">
         <button
-          class="w-full h-14 flex justify-center items-center gap-2 border border-gray-300 rounded-md px-2.5 text-sm cursor-pointer bg-white transition-colors duration-300 hover:#f5f5f5"
+          class="w-full h-14 flex justify-center items-center gap-2 border border-gray-300 rounded-md px-2.5 text-lg cursor-pointer bg-white transition-colors duration-300 hover:#f5f5f5"
           onclick="redirectToLoginWithGoogle()"
         >
           <img
@@ -42,7 +42,7 @@
             src="https://www.gstatic.com/images/branding/product/1x/gsa_48dp.png"
             alt="Google Logo"
           />
-          Login with Google
+          Masuk dengan Google
         </button>
       </div>
       <div class="flex items-center justify-center my-5 mb-6">
@@ -63,7 +63,7 @@
       <!-- Flash message End -->
 
       <form id="loginForm" action="/login" method="post">
-        <div class="mb-6">
+        <div class="mb-4">
           <label class="block mb-2 text-xl text-gray-800" for="username"
             >Username:</label
           >
@@ -76,7 +76,7 @@
             class="w-full p-3 text-[1rem] border border-gray-300 rounded-md outline-none box-border focus:border-green-500 focus:ring-2 focus:ring-green-300"
           />
         </div>
-        <div class="mb-6">
+        <div class="mb-4">
           <label class="block mb-2 text-xl text-gray-800" for="password"
             >Password:</label
           >
@@ -93,24 +93,24 @@
           <a
             href="/find_account/"
             class="text-blue-800 no-underline text-[0.9rem] hover:underline"
-            >Forget password?</a
+            >Lupa password?</a
           >
         </p>
         <button
           type="submit"
           name="login"
           value="login"
-          class="w-full bg-green-600 hover:bg-green-700 text-white text-lg font-semibold py-3 px-5 rounded-lg transition"
+          class="w-full bg-green-600 hover:bg-green-700 text-white text-lg font-semibold py-3 px-5 rounded-lg transition cursor-pointer"
         >
-          Login
+          Masuk
         </button>
         <div class="w-full flex justify-between">
           <p class="text-[0.9rem] mt-6">
-            Don't have an account?
+            Belum punya akun?
             <a
               href="/register/"
               class="text-blue-800 no-underline text-[0.9rem] hover:underline"
-              >Register</a
+              >Registrasi</a
             >
           </p>
         </div>

@@ -8,7 +8,7 @@ from twilio.rest import Client
 from authlib.integrations.flask_client import OAuth
 from markupsafe import escape
 from datetime import datetime, timedelta
-import random
+import random, string
 import logging
 import secrets
 import time
@@ -58,6 +58,11 @@ def normalize_phone_number(phone):
         return '+' + phone
     else:
         return phone
+    
+def generate_username(email):
+    name_part = email.split('@')[0]
+    random_suffix = ''.join(random.choices(string.digits, k=4))
+    return f"{name_part}_{random_suffix}"
 
 # Google OAuth Config
 oauth = OAuth(app)
@@ -115,7 +120,7 @@ def login():
             session['username'] = username
             safe_username = escape(username)
             flash(f"Login berhasil! Selamat datang, {safe_username}.", "success")
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('index'))
     return render_template('login.html', message=message)
 
 # Endpoint login with Google
@@ -129,15 +134,77 @@ def google_callback():
     token = google.authorize_access_token()
     resp = google.get('userinfo')  # ambil data user
     user_info = resp.json()
+    email = user_info['email']
+    user = Users.query.filter_by(email=email).first()
+    
+    if user:
+        # Simpan ke session atau database
+        session['user'] = {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'nama_lengkap': user.nama_lengkap,
+            'foto': user.foto,
+            'level': user.level
+        }
+        flash(f"Login berhasil! Selamat datang", "success")
+        return redirect(url_for('index'))
+    else:
+        # Jika belum ada, arahkan ke konfirmasi registrasi
+        session['pending_user'] = user_info
+        flash("Akun belum terdaftar. Lanjutkan untuk registrasi?", "warning")
+        return redirect(url_for('confirm_register'))
+    
+@app.route('/confirm-register/')
+def confirm_register():
+    user_info = session.get('pending_user')
 
-    # Simpan ke session atau database
+    if not user_info:
+        flash("Data user tidak ditemukan. Silakan login ulang.", "danger")
+        return redirect(url_for('login'))
+
+    return render_template("confirm_register.html", user=user_info)
+
+@app.route('/confirm-register', methods=['POST'])
+def do_register():
+    user_info = session.get('pending_user')
+
+    if not user_info:
+        flash("Data user tidak ditemukan. Silakan login ulang.", "danger")
+        return redirect(url_for('login'))
+    
+    email = user_info['email']
+    username = generate_username(email)
+
+
+    # Simpan ke database
+    new_user = Users(
+            username=username,
+            password=generate_password_hash(secrets.token_urlsafe(12), method='pbkdf2:sha256'),
+            nama_lengkap=user_info['name'],
+            email=user_info['email'],
+            jenis_kelamin=None,
+            usia=None,
+            foto=user_info['picture'],
+            nomor_hp=None,
+            level='user',
+            reset_token=None,
+            token_exp=None
+    )
+    db.session.add(new_user)
+    db.session.commit()
+
+    # Login langsung setelah registrasi
     session['user'] = {
-        'name': user_info['name'],
-        'email': user_info['email'],
-        'picture': user_info['picture']
+        'id': new_user.id,
+        'username': new_user.username,
+        'email': new_user.email,
+        'nama_lengkap': new_user.nama_lengkap,
+        'foto': new_user.foto,
+        'level': new_user.level
     }
-    flash(f"Login berhasil! Selamat datang", "success")
-    return redirect(url_for('dashboard'))
+    flash("Registrasi otomatis berhasil! Anda sudah login.", "success")
+    return redirect(url_for('index'))
 
 # Endpoint register
 @app.route('/register/', methods=['GET', 'POST'])

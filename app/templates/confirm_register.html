@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Konfirmasi Registrasi</title>
+
+    <!-- Tailwind CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/output.css') }}"
+    />
+  </head>
+  <body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
+      <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">
+        Konfirmasi Registrasi Pengguna Baru
+      </h2>
+
+      <div class="text-center mb-6">
+        <img
+          src="{{ user.picture }}"
+          alt="Foto Profil"
+          class="w-24 h-24 mx-auto rounded-full shadow-md"
+        />
+        <p class="text-lg font-semibold text-gray-700 mt-4">{{ user.name }}</p>
+        <p class="text-sm text-gray-500">{{ user.email }}</p>
+      </div>
+
+      <form method="POST" action="{{ url_for('do_register') }}">
+        <button
+          type="submit"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 cursor-pointer"
+        >
+          Lanjutkan Registrasi
+        </button>
+      </form>
+
+      <p class="text-center text-sm text-gray-400 mt-6">
+        Jika ini bukan akun Anda, silakan
+        <a href="{{ url_for('login') }}" class="text-blue-600 hover:underline"
+          >login ulang</a
+        >.
+      </p>
+    </div>
+  </body>
+</html>
