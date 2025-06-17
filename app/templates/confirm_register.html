@@ -16,6 +16,37 @@
         Konfirmasi Registrasi Pengguna Baru
       </h2>
 
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div
+        class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center px-4"
+      >
+        <div
+          class="w-full max-w-md p-6 rounded-2xl shadow-2xl border animate-fade-in {% if category == 'success' %} bg-green-100 text-green-700 border-green-300 {% elif category == 'warning' %} bg-yellow-100 text-yellow-700 border-yellow-300 {% elif category == 'danger' %} bg-red-100 text-red-700 border-red-300 {% else %} bg-gray-100 text-gray-700 border-gray-300 {% endif %}"
+        >
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold">Notifikasi</h2>
+            <button
+              onclick="this.closest('.fixed').classList.add('hidden')"
+              class="text-3xl hover:text-gray-700 transition cursor-pointer"
+            >
+              &times;
+            </button>
+          </div>
+
+          <p class="text-sm text-gray-700 mb-6">{{ message }}</p>
+
+          <button
+            onclick="this.closest('.fixed').classList.add('hidden')"
+            class="w-full py-2 px-4 text-white font-medium rounded-lg transition duration-200 cursor-pointer {% if category == 'success' %} bg-green-600 hover:bg-green-700 {% elif category == 'warning' %} bg-yellow-600 hover:bg-yellow-700 {% elif category == 'danger' %} bg-red-600 hover:bg-red-700 {% else %} bg-gray-600 hover:bg-gray-700 {% endif %}"
+          >
+            Lanjutkan
+          </button>
+        </div>
+      </div>
+      {% endfor %} {% endif %} {% endwith %}
+
       <div class="text-center mb-6">
         <img
           src="{{ user.picture }}"

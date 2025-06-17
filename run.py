@@ -126,17 +126,25 @@ def login():
 # Endpoint login with Google
 @app.route('/login/google/', methods=['GET', 'POST'])
 def login_google():
-    redirect_uri = url_for('google_callback', _external=True)
+    redirect_uri = url_for('login_google_callback', _external=True)
     return google.authorize_redirect(redirect_uri)
 
+# Endpoint Callback Login With Google
 @app.route('/login/google/callback/')
-def google_callback():
-    token = google.authorize_access_token()
-    resp = google.get('userinfo')  # ambil data user
-    user_info = resp.json()
+def login_google_callback():
+    try:
+        token = google.authorize_access_token()
+        resp = google.get('userinfo')  # ambil data user dari Google
+        resp.raise_for_status()  # pastikan response OK (status code 200)
+        user_info = resp.json()
+    except Exception as e:
+        print(f"Google login error: {e}") 
+        flash("Gagal login dengan Google. Silakan coba lagi.", "danger")
+        return redirect(url_for('login'))
+    
+    # Proses lanjut jika data user berhasil diambil
     email = user_info['email']
     user = Users.query.filter_by(email=email).first()
-    
     if user:
         # Simpan ke session atau database
         session['user'] = {
@@ -154,29 +162,26 @@ def google_callback():
         session['pending_user'] = user_info
         flash("Akun belum terdaftar. Lanjutkan untuk registrasi?", "warning")
         return redirect(url_for('confirm_register'))
-    
+
+# Endpoint Fisrt Confirm Register With Google
 @app.route('/confirm-register/')
 def confirm_register():
     user_info = session.get('pending_user')
-
     if not user_info:
         flash("Data user tidak ditemukan. Silakan login ulang.", "danger")
         return redirect(url_for('login'))
-
     return render_template("confirm_register.html", user=user_info)
 
+# Endpoint Second Confirm Register With Google
 @app.route('/confirm-register', methods=['POST'])
 def do_register():
     user_info = session.get('pending_user')
-
     if not user_info:
         flash("Data user tidak ditemukan. Silakan login ulang.", "danger")
         return redirect(url_for('login'))
-    
     email = user_info['email']
     username = generate_username(email)
-
-
+    
     # Simpan ke database
     new_user = Users(
             username=username,
@@ -191,6 +196,9 @@ def do_register():
             reset_token=None,
             token_exp=None
     )
+    if Users.query.filter_by(email=email).first():
+        flash("Email sudah digunakan. Silakan login.", "warning")
+        return redirect(url_for('login'))
     db.session.add(new_user)
     db.session.commit()
 
@@ -263,6 +271,60 @@ def register():
             flash("Email Anda telah terdaftar.", "danger")
         return redirect(url_for('register'))
     return render_template('register.html')
+
+# Endpoint Register With Google
+@app.route('/register/google/', methods=['GET', 'POST'])
+def register_google():
+    redirect_uri = url_for('register_google_callback', _external=True)
+    return google.authorize_redirect(redirect_uri)
+
+# Endpoint Callback Register With Google
+@app.route('/register/google/callback/')
+def register_google_callback():
+    try:
+        token = google.authorize_access_token()
+        resp = google.get('userinfo')
+        resp.raise_for_status() 
+        user_info = resp.json()
+    except Exception as e:
+        print(f"Google registrasi error: {e}") 
+        flash("Gagal melakukan registrasi dengan Google. Silakan coba lagi.", "danger")
+        return redirect(url_for('register'))
+    
+    email = user_info['email']
+    username = generate_username(email)
+    
+    # Simpan ke database
+    new_user = Users(
+            username=username,
+            password=generate_password_hash(secrets.token_urlsafe(12), method='pbkdf2:sha256'),
+            nama_lengkap=user_info['name'],
+            email=user_info['email'],
+            jenis_kelamin=None,
+            usia=None,
+            foto=user_info['picture'],
+            nomor_hp=None,
+            level='user',
+            reset_token=None,
+            token_exp=None
+    )
+    if Users.query.filter_by(email=email).first():
+        flash("Email sudah digunakan. Silakan login.", "warning")
+        return redirect(url_for('login'))
+    db.session.add(new_user)
+    db.session.commit()
+    
+    # Login langsung setelah registrasi
+    session['user'] = {
+        'id': new_user.id,
+        'username': new_user.username,
+        'email': new_user.email,
+        'nama_lengkap': new_user.nama_lengkap,
+        'foto': new_user.foto,
+        'level': new_user.level
+    }
+    flash("Registrasi otomatis berhasil! Anda sudah login.", "success")
+    return redirect(url_for('index'))
 
 # Endpoint Find Account
 @app.route('/find_account/', methods=['GET', 'POST'])

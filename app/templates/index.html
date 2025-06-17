@@ -416,7 +416,7 @@
       id="news"
       class="py-20 min-h-screen bg-gray-700 text-white wow animate__animated animate__fadeInUp animate__delay-0.5s"
     >
-      <div class="container mx-auto px-6 mt-10">
+      <div class="container mx-auto px-6 mt-7">
         <div class="text-center mb-12">
           <h2 class="text-2xl text-yellow-400 font-semibold mb-4">
             Berita Terbaru
@@ -426,17 +426,17 @@
           </p>
         </div>
 
-        <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
           <!-- Card 1 -->
           <div
-            class="bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-yellow-400/30 transition cursor-pointer"
+            class="bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-yellow-400/30 transition cursor-pointer flex flex-col"
           >
             <img
               src="{{ url_for('static', filename='images/') }}"
               alt="Berita 1"
               class="w-full h-48 object-cover"
             />
-            <div class="p-6">
+            <div class="flex-grow p-3.5">
               <h3 class="text-xl font-bold mb-2">
                 Peluncuran Layanan Hosting Baru
               </h3>
@@ -445,24 +445,24 @@
                 Kami kini menyediakan layanan hosting dengan performa tinggi dan
                 harga bersaing untuk wilayah Papua Selatan...
               </p>
-              <a
-                href="#"
-                class="text-yellow-400 text-[0.9rem] hover:underline font-semibold"
-                >Selengkapnya →</a
-              >
             </div>
+            <a
+              href="#"
+              class="text-yellow-400 text-[0.9rem] hover:underline font-semibold mt-6 self-start p-3.5"
+              >Selengkapnya →</a
+            >
           </div>
 
           <!-- Card 2 -->
           <div
-            class="bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-yellow-400/30 transition cursor-pointer"
+            class="bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-yellow-400/30 transition cursor-pointer flex flex-col"
           >
             <img
               src="{{ url_for('static', filename='images/') }}"
               alt="Berita 2"
               class="w-full h-48 object-cover"
             />
-            <div class="p-6">
+            <div class="flex-grow p-3.5">
               <h3 class="text-xl font-bold mb-2">
                 Workshop Teknologi untuk UMKM Lokal
               </h3>
@@ -471,24 +471,24 @@
                 Kami mengadakan pelatihan digitalisasi untuk UMKM lokal dalam
                 memanfaatkan teknologi web dan cloud...
               </p>
-              <a
-                href="#"
-                class="text-yellow-400 text-[0.9rem] hover:underline font-semibold"
-                >Selengkapnya →</a
-              >
             </div>
+            <a
+              href="#"
+              class="text-yellow-400 text-[0.9rem] hover:underline font-semibold mt-6 self-start p-3.5"
+              >Selengkapnya →</a
+            >
           </div>
 
           <!-- Card 3 -->
           <div
-            class="bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-yellow-400/30 transition cursor-pointer"
+            class="bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-yellow-400/30 transition cursor-pointer flex flex-col"
           >
             <img
               src="{{ url_for('static', filename='images/') }}"
               alt="Berita 3"
               class="w-full h-48 object-cover"
             />
-            <div class="p-6">
+            <div class="flex-grow p-3.5">
               <h3 class="text-xl font-bold mb-2">
                 Kerja Sama dengan Pemerintah Daerah
               </h3>
@@ -497,12 +497,12 @@
                 Kami menjalin kerja sama untuk pengembangan sistem informasi
                 pemerintahan berbasis web...
               </p>
-              <a
-                href="#"
-                class="text-yellow-400 text-[0.9rem] hover:underline font-semibold"
-                >Selengkapnya →</a
-              >
             </div>
+            <a
+              href="#"
+              class="text-yellow-400 text-[0.9rem] hover:underline font-semibold mt-6 self-start p-3.5"
+              >Selengkapnya →</a
+            >
           </div>
         </div>
       </div>
@@ -525,17 +525,20 @@
         </div>
 
         <!-- Grid Portfolio -->
-        <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
           <!-- Card 1 -->
           <div
-            class="bg-gray-900 rounded-xl overflow-hidden shadow-lg group hover:shadow-yellow-400/30 transition cursor-pointer"
+            class="bg-gray-900 rounded-xl overflow-hidden shadow-lg group hover:shadow-yellow-400/30 transition cursor-pointer flex flex-col"
           >
+            <!-- Gambar -->
             <img
               src="{{ url_for('static', filename='images/') }}"
               alt="Proyek 1"
               class="w-full h-56 object-cover"
             />
-            <div class="p-6">
+
+            <!-- Konten -->
+            <div class="flex-grow p-3.5">
               <h3 class="text-xl font-bold mb-2">
                 Sistem Informasi Pengarsipan Surat Internal Biro Pemerintahan,
                 Otsus dan Kesra Setda Provinsi Papua Selatan
@@ -544,24 +547,29 @@
                 Sistem informasi manajemen pengarsipan surat untuk
                 pengelolaan...
               </p>
-              <a
-                href="#"
-                class="text-yellow-400 text-[0.9rem] hover:underline font-semibold"
-                >Lihat Detail →</a
-              >
             </div>
+
+            <!-- Tombol di kiri bawah -->
+            <a
+              href="#"
+              class="text-yellow-400 text-[0.9rem] hover:underline font-semibold mt-6 self-start p-3.5"
+              >Lihat Detail →</a
+            >
           </div>
 
           <!-- Card 2 -->
           <div
-            class="bg-gray-900 rounded-xl overflow-hidden shadow-lg group hover:shadow-yellow-400/30 transition cursor-pointer"
+            class="bg-gray-900 rounded-xl overflow-hidden shadow-lg group hover:shadow-yellow-400/30 transition cursor-pointer flex flex-col"
           >
+            <!-- Gambar -->
             <img
               src="{{ url_for('static', filename='images/') }}"
               alt="Proyek 2"
               class="w-full h-56 object-cover"
             />
-            <div class="p-6">
+
+            <!-- Konten -->
+            <div class="flex-grow p-3.5">
               <h3 class="text-xl font-bold mb-2">
                 Website Marketplace Lokal Merauke Online
               </h3>
@@ -569,24 +577,29 @@
                 Pembuatan website marketplace lokal untuk memberdayakan UMKM
                 lokal di Kabupaten Merauke...
               </p>
-              <a
-                href="#"
-                class="text-yellow-400 text-[0.9rem] hover:underline font-semibold"
-                >Lihat Detail →</a
-              >
             </div>
+
+            <!-- Tombol di kiri bawah -->
+            <a
+              href="#"
+              class="text-yellow-400 text-[0.9rem] hover:underline font-semibold mt-6 self-start p-3.5"
+              >Lihat Detail →</a
+            >
           </div>
 
           <!-- Card 3 -->
           <div
-            class="bg-gray-900 rounded-xl overflow-hidden shadow-lg group hover:shadow-yellow-400/30 transition cursor-pointer"
+            class="bg-gray-900 rounded-xl overflow-hidden shadow-lg group hover:shadow-yellow-400/30 transition cursor-pointer flex flex-col"
           >
+            <!-- Gambar -->
             <img
               src="{{ url_for('static', filename='images/') }}"
               alt="Proyek 3"
               class="w-full h-56 object-cover"
             />
-            <div class="p-6">
+
+            <!-- Konten -->
+            <div class="flex-grow p-3.5">
               <h3 class="text-xl font-bold mb-2">
                 Website Berita Info Merauke
               </h3>
@@ -594,12 +607,14 @@
                 Website pemberitaan bagi media Info Merauke yang disajikan
                 sebagai bentuk layanan publik yang informatif...
               </p>
-              <a
-                href="#"
-                class="text-yellow-400 text-[0.9rem] hover:underline font-semibold"
-                >Lihat Detail →</a
-              >
             </div>
+
+            <!-- Tombol di kiri bawah -->
+            <a
+              href="#"
+              class="text-yellow-400 text-[0.9rem] hover:underline font-semibold mt-6 self-start p-3.5"
+              >Lihat Detail →</a
+            >
           </div>
         </div>
       </div>
@@ -697,7 +712,7 @@
                 class="absolute w-full h-[350px] bg-gray-900 rounded-xl shadow-lg backface-hidden flex flex-col items-center justify-center text-center p-6 py-24 hover:shadow-yellow-400/30 transition cursor-pointer"
               >
                 <img
-                  src="{{ url_for('static', filename='images/Adi-Prasetyo.JPG') }}"
+                  src="{{ url_for('static', filename='images/Rizky-Pattiasina.JPG') }}"
                   alt="Foto Adi"
                   class="w-44 h-44 rounded-full object-cover mb-4"
                 />
@@ -707,7 +722,7 @@
                   class="flex justify-center space-x-4 text-lg text-white mt-8"
                 >
                   <a
-                    href="https://github.com/adiprsty119"
+                    href="https://github.com/rizkypattiasina"
                     target="_blank"
                     class="hover:text-yellow-400 relative group"
                   >
@@ -719,7 +734,7 @@
                     </span>
                   </a>
                   <a
-                    href="https://www.linkedin.com/in/adi-prasetyo-86808528b/"
+                    href="https://www.linkedin.com/in/rizky-pattiasina-066b17219?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
                     target="_blank"
                     class="hover:text-yellow-400 relative group"
                   >
@@ -731,14 +746,25 @@
                     </span>
                   </a>
                   <a
-                    href="adip98816@gmail.com"
+                    href="https://www.instagram.com/pattirizky_?igsh=aHlsbGNuendrajZx"
+                    class="hover:text-yellow-400 relative group"
+                  >
+                    <i class="fa-brands fa-instagram"></i>
+                    <span
+                      class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
+                    >
+                      Kunjungi Instagram @rizkypattiasina
+                    </span>
+                  </a>
+                  <a
+                    href="rizkypattiasina@gmail.com"
                     class="hover:text-yellow-400 relative group"
                   >
                     <i class="fas fa-envelope"></i>
                     <span
                       class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
                     >
-                      Kunjungi Instagram rizkypattiasina
+                      Kirim pesan email ke rizkypattiasina@gmail.com
                     </span>
                   </a>
                 </div>
@@ -809,6 +835,17 @@
                     </span>
                   </a>
                   <a
+                    href="https://www.instagram.com/adiprsty119/profilecard/?igsh=NzdjOGgyeWhnMjZw"
+                    class="hover:text-yellow-400 relative group"
+                  >
+                    <i class="fa-brands fa-instagram"></i>
+                    <span
+                      class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
+                    >
+                      Kunjungi Instagram @adiprsty119
+                    </span>
+                  </a>
+                  <a
                     href="adip98816@gmail.com"
                     class="hover:text-yellow-400 relative group"
                   >
@@ -816,7 +853,7 @@
                     <span
                       class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
                     >
-                      Kunjungi Instagram adiprsty119
+                      Kirim pesan email ke adip98816@gmail.com
                     </span>
                   </a>
                 </div>
@@ -1117,26 +1154,49 @@
             <a
               href="https://facebook.com"
               target="_blank"
-              class="hover:text-yellow-400"
+              class="hover:text-yellow-400 relative group"
             >
               <i class="fab fa-facebook-f"></i>
+              <span
+                class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
+              >
+                Kunjungi Facebook TOMA
+              </span>
             </a>
             <a
               href="https://www.instagram.com/id.toma?utm_source=ig_web_button_share_sheet&igsh=MW5sNzk3MG4wdXo5eA=="
               target="_blank"
-              class="hover:text-yellow-400"
+              class="hover:text-yellow-400 relative group"
             >
               <i class="fab fa-instagram"></i>
+              <span
+                class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
+              >
+                Kunjungi Instagram TOMA
+              </span>
             </a>
             <a
               href="https://linkedin.com"
               target="_blank"
-              class="hover:text-yellow-400"
+              class="hover:text-yellow-400 relative group"
             >
               <i class="fab fa-linkedin-in"></i>
+              <span
+                class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
+              >
+                Kunjungi LinkedIn TOMA
+              </span>
             </a>
-            <a href="mailto:info@tomma.co" class="hover:text-yellow-400">
+            <a
+              href="mailto:info@tomma.co"
+              class="hover:text-yellow-400 relative group"
+            >
               <i class="fas fa-envelope"></i>
+              <span
+                class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
+              >
+                Kirim pesan email ke toma@gmail.com
+              </span>
             </a>
           </div>
         </div>
