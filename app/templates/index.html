@@ -242,6 +242,7 @@
             </button>
 
             <!-- Notifikasi -->
+            {% if session.get('username') %}
             <button
               title="Notifikasi"
               class="relative flex items-center justify-center text-yellow-400 hover:text-yellow-300 transition text-2xl cursor-pointer mr-4 ml-5"
@@ -254,6 +255,7 @@
                 3
               </span>
             </button>
+            {% endif %}
 
             <!-- Sign Up -->
             <a

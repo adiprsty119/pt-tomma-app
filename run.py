@@ -106,22 +106,23 @@ def generate_verification_code():
 # Endpoint login
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
-    message = None
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        
         # Query user dari database
         user = Users.query.filter_by(username=username).first()
+        
         if not user:
             flash("Username salah!", "danger")
         elif not check_password_hash(user.password, password):
             flash("Password salah!", "danger")
         else:
-            session['username'] = username
+            session['username'] = username  # ⬅️ Set session saat berhasil login
             safe_username = escape(username)
             flash(f"Login berhasil! Selamat datang, {safe_username}.", "success")
-            return redirect(url_for('index'))
-    return render_template('login.html', message=message)
+            return redirect(url_for('index'))  # Arahkan ke halaman utama setelah login
+    return render_template('login.html')
 
 # Endpoint login with Google
 @app.route('/login/google/', methods=['GET', 'POST'])
@@ -223,7 +224,7 @@ def register():
         username = request.form['username']
         password = request.form['password']
         confirm_password = request.form['confirmPassword']
-        level = request.form['level']
+        level = 'user'  # ⬅️ Default level tanpa input dari user
         
         # Validasi password dengan regex
         password_pattern = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
@@ -233,11 +234,6 @@ def register():
         # Validasi apakah password dan confirmPassword cocok
         if password != confirm_password:
             flash("Password and Confirm Password must match!", "danger")
-            return redirect(url_for('register'))
-        # Validasi level user
-        valid_levels = ['admin', 'user']
-        if level not in valid_levels:
-            flash("Invalid level selected. Please try again.", "danger")
             return redirect(url_for('register'))
         # Cek keberadaan username dan email di database
         user_exists = check_username_in_db(username)
@@ -264,7 +260,7 @@ def register():
                 flash("An error occurred during registration.Please try again.", "danger")
                 print(e)
         elif user_exists and email_exists:
-            flash("Usernam dan email Anda telah terdaftar.", "danger")
+            flash("Username dan email Anda telah terdaftar.", "danger")
         elif user_exists:
             flash("Username Anda telah terdaftar.", "danger")
         elif email_exists:
@@ -585,9 +581,11 @@ def portfolio():
 def services():
     return render_template("services.html")
 
-@app.route("/thankyou/")
-def thankyou():
-    return render_template("thankyou.html")
+@app.route('/logout/')
+def logout():
+    session.pop('username', None)
+    flash("Anda telah logout.", "info")
+    return redirect(url_for('index'))
 
 if __name__ == "__main__":
     app.run(debug=True)
