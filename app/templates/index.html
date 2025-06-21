@@ -7,7 +7,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome!</title>
+    <title>
+      {{ 'Selamat Datang!' if current_lang == 'id' else 'Welcome!' }}
+    </title>
 
     <!-- Tailwind CSS -->
     <link
@@ -70,12 +72,12 @@
         </div>
 
         <!-- Center: Search + Language (Mobile) -->
-        <div class="flex md:hidden items-center space-x-3">
-          <div class="relative w-40">
+        <div class="flex md:hidden items-center space-x-4">
+          <div class="relative w-64">
             <input
               type="text"
-              placeholder="Cari..."
-              class="px-3 py-1 rounded-full bg-gray-700 text-white text-sm placeholder-gray-400 w-full"
+              placeholder="{{ 'Cari...' if current_lang == 'id' else 'Search...' }}"
+              class="px-3 py-2 rounded-full bg-gray-700 text-white text-sm placeholder-gray-400 w-full"
             />
             <div
               class="absolute inset-y-0 right-3 flex items-center pointer-events-none"
@@ -91,7 +93,7 @@
               @click="open = !open"
               class="bg-yellow-400 text-gray-900 font-semibold px-3 py-1.5 rounded-md hover:bg-yellow-300 transition text-sm flex items-center gap-1 cursor-pointer"
             >
-              EN
+              {{ 'ID' if current_lang == 'id' else 'EN' }}
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fill-rule="evenodd"
@@ -109,19 +111,35 @@
               class="absolute right-0 mt-2 w-28 bg-white border border-gray-200 rounded-md shadow-md z-50"
             >
               <a
-                href="#"
+                href="{{ url_for('set_language', lang_code='id') }}"
                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-100"
               >
                 Bahasa
               </a>
               <a
-                href="#"
+                href="{{ url_for('set_language', lang_code='en') }}"
                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-100"
               >
                 English
               </a>
             </div>
           </div>
+
+          <!-- Notifikasi -->
+          {% if session.get('username') %}
+          <button
+            title="Notifikasi"
+            class="relative flex items-center justify-center text-yellow-400 hover:text-yellow-300 transition text-2xl cursor-pointer my-3"
+          >
+            <i class="fas fa-bell"></i>
+            <!-- Badge (Opsional) -->
+            <span
+              class="absolute -top-1 -right-1 text-[10px] bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center font-semibold"
+            >
+              3
+            </span>
+          </button>
+          {% endif %}
 
           <!-- Hamburger Icon (Mobile Only) -->
           <button
@@ -139,23 +157,27 @@
         <!-- Desktop Navigation -->
         <div class="hidden md:flex items-center space-x-6">
           <nav class="flex space-x-4">
-            <a href="#home" class="hover:text-yellow-400 text-xl">Beranda</a>
-            <a href="#news" class="hover:text-yellow-400 text-xl">Berita</a>
+            <a href="#home" class="hover:text-yellow-400 text-xl">
+              {{ 'Beranda' if current_lang == 'id' else 'Home' }}
+            </a>
+            <a href="#news" class="hover:text-yellow-400 text-xl">
+              {{ 'Berita' if current_lang == 'id' else 'News' }}
+            </a>
             <a href="#portfolio" class="hover:text-yellow-400 text-xl"
-              >Portfolio</a
+              >{{ 'Portfolio' }}</a
             >
             <a href="#about" class="hover:text-yellow-400 text-xl"
-              >Tentang Kami</a
-            >
+              >{{ 'Tentang Kami' if current_lang == 'id' else 'About Us' }}
+            </a>
             <a href="#developer" class="hover:text-yellow-400 text-xl"
-              >Pengembang</a
-            >
+              >{{ 'Pengembang' if current_lang == 'id' else 'Developer' }}
+            </a>
             <a href="#services" class="hover:text-yellow-400 text-xl"
-              >Layanan</a
-            >
+              >{{ 'Layanan' if current_lang == 'id' else 'Services' }}
+            </a>
             <a href="#request" class="hover:text-yellow-400 text-xl"
-              >Permintaan</a
-            >
+              >{{ 'Permintaan' if current_lang == 'id' else 'Request' }}
+            </a>
           </nav>
 
           <!-- Search + Language (Desktop) -->
@@ -163,7 +185,7 @@
             <div class="relative">
               <input
                 type="text"
-                placeholder="Cari..."
+                placeholder="{{ 'Cari...' if current_lang == 'id' else 'Search...' }}"
                 class="pl-4 pr-10 py-2 rounded-full bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400"
               />
               <div
@@ -180,7 +202,7 @@
                 @click="open = !open"
                 class="bg-yellow-400 text-gray-900 font-semibold px-3 py-1.5 rounded-md hover:bg-yellow-300 transition text-sm flex items-center gap-1 cursor-pointer"
               >
-                EN
+                {{ 'ID' if current_lang == 'id' else 'EN' }}
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fill-rule="evenodd"
@@ -198,13 +220,13 @@
                 class="absolute right-0 mt-2 w-28 bg-white border border-gray-200 rounded-md shadow-md z-50"
               >
                 <a
-                  href="#"
+                  href="{{ url_for('set_language', lang_code='id') }}"
                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-100"
                 >
                   Bahasa
                 </a>
                 <a
-                  href="#"
+                  href="{{ url_for('set_language', lang_code='en') }}"
                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-100"
                 >
                   English
@@ -216,7 +238,7 @@
             <button
               x-data
               @click="$store.theme.toggle()"
-              :title="$store.theme.isDark ? 'Beralih ke Dark Mode' : 'Beralih ke Light Mode'"
+              :title="$store.theme.isDark ? '{{ 'Beralih ke Dark Mode' if current_lang == 'id' else 'Switch to Dark Mode' }}' : '{{ 'Beralih ke Light Mode' if current_lang == 'id' else 'Switch to Light Mode' }}'"
               class="relative w-[80px] flex justify-center items-center bg-gray-800 dark:bg-yellow-400 text-yellow-300 dark:text-gray-900 px-0.5 py-1.5 rounded-md text-sm font-semibold transition hover:brightness-110 cursor-pointer"
             >
               <template
@@ -244,7 +266,7 @@
             <!-- Notifikasi -->
             {% if session.get('username') %}
             <button
-              title="Notifikasi"
+              title="{{ 'Notifikasi' if current_lang == 'id' else 'Notification' }}"
               class="relative flex items-center justify-center text-yellow-400 hover:text-yellow-300 transition text-2xl cursor-pointer mr-4 ml-5"
             >
               <i class="fas fa-bell"></i>
@@ -261,10 +283,9 @@
             <a
               href="/login/"
               class="flex items-center justify-center gap-1 text-yellow-400 hover:text-yellow-300 transition text-2xl"
-              title="Masuk Akun"
+              title="{{ 'Masuk ke Akun' if current_lang == 'id' else 'Login' }}"
             >
               <i class="fas fa-user-plus"></i>
-              <span class="sr-only">Sign Up</span>
             </a>
           </div>
         </div>
@@ -288,21 +309,23 @@
           @click="open = false"
           class="hover:text-yellow-400 text-xl flex items-center gap-3"
         >
-          <i class="fas fa-house"></i> Beranda
+          <i class="fas fa-house"></i>
+          {{ 'Beranda' if current_lang == 'id' else 'Home' }}
         </a>
         <a
           href="#news"
           @click="open = false"
           class="hover:text-yellow-400 text-xl flex items-center gap-3"
         >
-          <i class="fas fa-newspaper"></i> Berita
+          <i class="fas fa-newspaper"></i>
+          {{ 'Berita' if current_lang == 'id' else 'News' }}
         </a>
         <a
           href="#portfolio"
           @click="open = false"
           class="hover:text-yellow-400 text-xl flex items-center gap-3"
         >
-          <i class="fas fa-briefcase"></i> Portfolio
+          <i class="fas fa-briefcase"></i>{{ 'Portfolio' }}
         </a>
 
         <a
@@ -310,7 +333,8 @@
           @click="open = false"
           class="hover:text-yellow-400 text-xl flex items-center gap-3"
         >
-          <i class="fas fa-circle-info"></i> Tentang Kami
+          <i class="fas fa-circle-info"></i>
+          {{ 'Tentang Kami' if current_lang == 'id' else 'About Us' }}
         </a>
 
         <a
@@ -318,7 +342,8 @@
           @click="open = false"
           class="hover:text-yellow-400 text-xl flex items-center gap-3"
         >
-          <i class="fas fa-code"></i> Pengembang
+          <i class="fas fa-code"></i>
+          {{ 'Pengembang' if current_lang == 'id' else 'Developer' }}
         </a>
 
         <a
@@ -326,7 +351,8 @@
           @click="open = false"
           class="hover:text-yellow-400 text-xl flex items-center gap-3"
         >
-          <i class="fas fa-concierge-bell"></i> Layanan
+          <i class="fas fa-concierge-bell"></i>
+          {{ 'Layanan' if current_lang == 'id' else 'Services' }}
         </a>
 
         <a
@@ -334,7 +360,8 @@
           @click="open = false"
           class="hover:text-yellow-400 text-xl flex items-center gap-3"
         >
-          <i class="fas fa-paper-plane"></i> Permintaan
+          <i class="fas fa-paper-plane"></i>
+          {{ 'Permintaan' if current_lang == 'id' else 'Request' }}
         </a>
       </div>
     </header>
@@ -352,13 +379,16 @@
           <h2
             class="text-2xl mt-6 md:text-5xl font-extrabold mb-6 leading-tight"
           >
-            Selamat Datang di
+            {{ 'Selamat Datang di' if current_lang == 'id' else 'Welcome to' }}
             <span class="text-yellow-400">TOMA CAHAYA NUSANTARA</span>
           </h2>
           <p class="text-sm md:text-xl mb-6">
-            Kami adalah perusahaan IT yang berkomitmen membantu Anda dalam
+            {{ 'Kami adalah perusahaan IT yang berkomitmen membantu Anda dalam
             pengembangan aplikasi website, penyediaan server hosting, dan
-            layanan konsultasi teknologi terbaik di Papua Selatan.
+            layanan konsultasi teknologi terbaik di Papua Selatan.' if
+            current_lang == 'id' else 'We are an IT company committed to helping
+            you with website application development, server hosting services,
+            and top-notch technology consulting in South Papua.' }}
           </p>
           <div
             class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
@@ -367,13 +397,15 @@
               href="#services"
               class="bg-yellow-400 text-gray-900 px-6 py-3 rounded-full font-semibold hover:bg-yellow-300 hover:ring-2 hover:ring-yellow-200 transition"
             >
-              Jelajahi Layanan
+              {{ 'Jelajahi Layanan' if current_lang == 'id' else 'Explore
+              Services' }}
             </a>
             <a
               href="#request"
               class="border border-yellow-400 text-yellow-400 px-6 py-3 rounded-full font-semibold hover:bg-yellow-400 hover:text-gray-900 transition"
             >
-              Ajukan Permintaan
+              {{ 'Ajukan Permintaan' if current_lang == 'id' else 'Submit
+              Request' }}
             </a>
           </div>
         </div>
@@ -421,10 +453,12 @@
       <div class="container mx-auto px-6 mt-7">
         <div class="text-center mb-12">
           <h2 class="text-2xl text-yellow-400 font-semibold mb-4">
-            Berita Terbaru
+            {{ 'Berita Terbaru' if current_lang == 'id' else 'Latest News' }}
           </h2>
           <p class="text-sm">
-            Ikuti perkembangan terbaru dan informasi terkini dari tim kami.
+            {{ 'Ikuti perkembangan terbaru dan informasi terkini dari tim kami.'
+            if current_lang == 'id' else 'Stay updated with the latest
+            developments and news from our team.' }}
           </p>
         </div>
 
@@ -440,19 +474,26 @@
             />
             <div class="flex-grow p-3.5">
               <h3 class="text-xl font-bold mb-2">
-                Peluncuran Layanan Hosting Baru
+                {{ 'Peluncuran Layanan Hosting Baru' if current_lang == 'id'
+                else 'Launch of New Hosting Service' }}
               </h3>
-              <p class="text-sm text-gray-400 mb-3">12 Juni 2025</p>
+              <p class="text-sm text-gray-400 mb-3">
+                {{ '12 Juni 2025' if current_lang == 'id' else 'June 12, 2025'
+                }}
+              </p>
               <p class="mb-4 text-[0.9rem]">
-                Kami kini menyediakan layanan hosting dengan performa tinggi dan
-                harga bersaing untuk wilayah Papua Selatan...
+                {{ 'Kami kini menyediakan layanan hosting dengan performa tinggi
+                dan harga bersaing untuk wilayah Papua Selatan...' if
+                current_lang == 'id' else 'We now offer high-performance hosting
+                services at competitive prices for the South Papua region...' }}
               </p>
             </div>
             <a
               href="#"
               class="text-yellow-400 text-[0.9rem] hover:underline font-semibold mt-6 self-start p-3.5"
-              >Selengkapnya →</a
             >
+              {{ 'Selengkapnya →' if current_lang == 'id' else 'Learn More →' }}
+            </a>
           </div>
 
           <!-- Card 2 -->
@@ -466,19 +507,25 @@
             />
             <div class="flex-grow p-3.5">
               <h3 class="text-xl font-bold mb-2">
-                Workshop Teknologi untuk UMKM Lokal
+                {{ 'Workshop Teknologi untuk UMKM Lokal' if current_lang == 'id'
+                else 'Technology Workshop for Local Small Businesses' }}
               </h3>
-              <p class="text-sm text-gray-400 mb-3">8 Juni 2025</p>
+              <p class="text-sm text-gray-400 mb-3">
+                {{ '8 Juni 2025' if current_lang == 'id' else 'June 8, 2025' }}
+              </p>
               <p class="mb-4 text-[0.9rem]">
-                Kami mengadakan pelatihan digitalisasi untuk UMKM lokal dalam
-                memanfaatkan teknologi web dan cloud...
+                {{ 'Kami mengadakan pelatihan digitalisasi untuk UMKM lokal
+                dalam memanfaatkan teknologi web dan cloud...' if current_lang
+                == 'id' else 'We organized a digitalization workshop for local
+                MSMEs to leverage web and cloud technologies...' }}
               </p>
             </div>
             <a
               href="#"
               class="text-yellow-400 text-[0.9rem] hover:underline font-semibold mt-6 self-start p-3.5"
-              >Selengkapnya →</a
             >
+              {{ 'Selengkapnya →' if current_lang == 'id' else 'Learn More →' }}
+            </a>
           </div>
 
           <!-- Card 3 -->
@@ -492,19 +539,25 @@
             />
             <div class="flex-grow p-3.5">
               <h3 class="text-xl font-bold mb-2">
-                Kerja Sama dengan Pemerintah Daerah
+                {{ 'Kerja Sama dengan Pemerintah Daerah' if current_lang == 'id'
+                else 'Collaboration with the Local Government' }}
               </h3>
-              <p class="text-sm text-gray-400 mb-3">3 Juni 2025</p>
+              <p class="text-sm text-gray-400 mb-3">
+                {{ '3 Juni 2025' if current_lang == 'id' else 'June 3, 2025' }}
+              </p>
               <p class="mb-4 text-[0.9rem]">
-                Kami menjalin kerja sama untuk pengembangan sistem informasi
-                pemerintahan berbasis web...
+                {{ 'Kami menjalin kerja sama untuk pengembangan sistem informasi
+                pemerintahan berbasis web...' if current_lang == 'id' else 'We
+                collaborated on the development of a web-based government
+                information system...' }}
               </p>
             </div>
             <a
               href="#"
               class="text-yellow-400 text-[0.9rem] hover:underline font-semibold mt-6 self-start p-3.5"
-              >Selengkapnya →</a
             >
+              {{ 'Selengkapnya →' if current_lang == 'id' else 'Learn More →' }}
+            </a>
           </div>
         </div>
       </div>
@@ -522,7 +575,9 @@
             Portfolio
           </h2>
           <p class="text-sm">
-            Kumpulan hasil kerja terbaik kami dalam berbagai proyek dan bidang.
+            {{ 'Kumpulan hasil kerja terbaik kami dalam berbagai proyek dan
+            bidang.' if current_lang == 'id' else 'A collection of our best
+            works across various projects and fields.' }}
           </p>
         </div>
 
@@ -555,8 +610,9 @@
             <a
               href="#"
               class="text-yellow-400 text-[0.9rem] hover:underline font-semibold mt-6 self-start p-3.5"
-              >Lihat Detail →</a
             >
+              {{ 'Lihat Detail →' if current_lang == 'id' else 'More Details' }}
+            </a>
           </div>
 
           <!-- Card 2 -->
@@ -573,10 +629,12 @@
             <!-- Konten -->
             <div class="flex-grow p-3.5">
               <h3 class="text-xl font-bold mb-2">
-                Website Marketplace Lokal Merauke Online
+                {{ 'Lihat Detail →' if current_lang == 'id' else 'More Details'
+                }} Website Marketplace Lokal Merauke Online
               </h3>
               <p class="text-gray-400 text-[0.9rem] mb-3">
-                Pembuatan website marketplace lokal untuk memberdayakan UMKM
+                {{ 'Lihat Detail →' if current_lang == 'id' else 'More Details'
+                }} Pembuatan website marketplace lokal untuk memberdayakan UMKM
                 lokal di Kabupaten Merauke...
               </p>
             </div>
@@ -585,7 +643,8 @@
             <a
               href="#"
               class="text-yellow-400 text-[0.9rem] hover:underline font-semibold mt-6 self-start p-3.5"
-              >Lihat Detail →</a
+              >{{ 'Lihat Detail →' if current_lang == 'id' else 'More Details'
+              }}</a
             >
           </div>
 
@@ -603,11 +662,15 @@
             <!-- Konten -->
             <div class="flex-grow p-3.5">
               <h3 class="text-xl font-bold mb-2">
-                Website Berita Info Merauke
+                {{ 'Website Berita Info Merauke' if current_lang == 'id' else
+                'Info Merauke News Website' }}
               </h3>
               <p class="text-gray-400 text-[0.9rem] mb-3">
-                Website pemberitaan bagi media Info Merauke yang disajikan
-                sebagai bentuk layanan publik yang informatif...
+                {{ 'Website pemberitaan bagi media Info Merauke yang disajikan
+                sebagai bentuk layanan publik yang informatif...' if
+                current_lang == 'id' else 'A news website by Info Merauke,
+                designed to serve as an informative public service platform...'
+                }}
               </p>
             </div>
 
@@ -615,7 +678,8 @@
             <a
               href="#"
               class="text-yellow-400 text-[0.9rem] hover:underline font-semibold mt-6 self-start p-3.5"
-              >Lihat Detail →</a
+              >{{ 'Lihat Detail →' if current_lang == 'id' else 'More Details'
+              }}</a
             >
           </div>
         </div>
@@ -630,11 +694,14 @@
       <div class="container mx-auto px-6 mt-7">
         <div class="text-center mb-12">
           <h2 class="text-2xl text-yellow-400 font-semibold mb-4 pt-6">
-            Tentang Kami
+            {{ 'Tentang Kami' if current_lang == 'id' else 'About Us' }}
           </h2>
           <p class="text-sm max-w-2xl mx-auto">
-            Kami adalah tim yang berdedikasi untuk menghadirkan solusi inovatif
-            dan berkualitas di bidang teknologi informasi.
+            {{ 'Kami adalah tim yang berdedikasi untuk menghadirkan solusi
+            inovatif dan berkualitas di bidang teknologi informasi.' if
+            current_lang == 'id' else 'We are a dedicated team committed to
+            delivering innovative and high-quality solutions in the field of
+            information technology.' }}
           </p>
         </div>
 
@@ -651,34 +718,44 @@
 
           <!-- Description -->
           <div>
-            <h3 class="text-xl font-bold mb-4">Mengapa Memilih Kami?</h3>
+            <h3 class="text-xl font-bold mb-4">
+              {{ 'Mengapa Memilih Kami?' if current_lang == 'id' else 'Why
+              Choose Us?' }}
+            </h3>
             <ul class="space-y-4 text-lg">
               <li class="flex items-start">
                 <i
                   class="fas fa-check-circle text-yellow-400 text-[0.9rem] mt-1 mr-3"
                 ></i>
-                Tim profesional dengan pengalaman dalam berbagai proyek TI skala
-                kecil hingga besar.
+                {{ 'Tim profesional dengan pengalaman dalam berbagai proyek TI
+                skala kecil hingga besar.' if current_lang == 'id' else 'A
+                professional team with experience in various IT projects, from
+                small to large scale.' }}
               </li>
               <li class="flex items-start">
                 <i
                   class="fas fa-check-circle text-yellow-400 text-[0.9rem] mt-1 mr-3"
                 ></i>
-                Komitmen penuh terhadap kualitas, keamanan, dan kepuasan klien.
+                {{ 'Komitmen penuh terhadap kualitas, keamanan, dan kepuasan
+                klien.' if current_lang == 'id' else 'Full commitment to
+                quality, security, and client satisfaction.' }}
               </li>
               <li class="flex items-start">
                 <i
                   class="fas fa-check-circle text-yellow-400 text-[0.9rem] mt-1 mr-3"
                 ></i>
-                Layanan menyeluruh dari perencanaan, pengembangan, hingga
-                pemeliharaan.
+                {{ 'Layanan menyeluruh dari perencanaan, pengembangan, hingga
+                pemeliharaan.' if current_lang == 'id' else 'Comprehensive
+                services from planning and development to maintenance.' }}
               </li>
               <li class="flex items-start">
                 <i
                   class="fas fa-check-circle text-yellow-400 text-[0.9rem] mt-1 mr-3"
                 ></i>
-                Dukungan IT lokal untuk Papua Selatan dengan pemahaman konteks
-                budaya dan geografis.
+                {{ 'Dukungan IT lokal untuk Papua Selatan dengan pemahaman
+                konteks budaya dan geografis.' if current_lang == 'id' else
+                'Local IT support for South Papua with an understanding of
+                cultural and geographical context.' }}
               </li>
             </ul>
           </div>
@@ -694,16 +771,19 @@
       <div class="container mx-auto px-6 mt-7">
         <div class="text-center mb-12">
           <h2 class="text-2xl text-yellow-400 font-semibold mb-4 pt-6">
-            Profil Developer
+            {{ 'Profil Pengembang' if current_lang == 'id' else 'Developer
+            Profile' }}
           </h2>
           <p class="text-sm max-w-2xl mx-auto">
-            Tim pengembang yang berdedikasi di balik kesuksesan setiap proyek
-            yang kami bangun.
+            {{ 'Tim pengembang yang berdedikasi di balik kesuksesan setiap
+            proyek yang kami bangun.' if current_lang == 'id' else 'The
+            dedicated development team behind the success of every project we
+            build.' }}
           </p>
         </div>
 
         <!-- Profil Developer (Flip Card) -->
-        <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-2">
+        <div class="grid gap-32 pb-20 sm:grid-cols-2 lg:grid-cols-2">
           <!-- Card 1 -->
           <div class="perspective">
             <div
@@ -719,7 +799,10 @@
                   class="w-44 h-44 rounded-full object-cover mb-4"
                 />
                 <h3 class="text-xl font-bold">Rizky Pattiasina</h3>
-                <h4 class="text-yellow-400 text-sm mt-1">Direktur PT TOMA</h4>
+                <h4 class="text-yellow-400 text-sm mt-1">
+                  {{ 'Direktur PT. TOMA' if current_lang == 'id' else 'Director
+                  of PT. TOMA' }}
+                </h4>
                 <div
                   class="flex justify-center space-x-4 text-lg text-white mt-8"
                 >
@@ -732,7 +815,8 @@
                     <span
                       class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
                     >
-                      Kunjungi GitHub rizkypattiasina
+                      {{ 'Kunjungi GitHub rizkypattiasina' if current_lang ==
+                      'id' else 'Visit GitHub rizkypattisasina' }}
                     </span>
                   </a>
                   <a
@@ -744,7 +828,8 @@
                     <span
                       class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
                     >
-                      Kunjungi Linkedin rizkypattiasina
+                      {{ 'Kunjungi Linkedin rizkypattiasina' if current_lang ==
+                      'id' else 'Visit LinkedIn rizkypattiasina' }}
                     </span>
                   </a>
                   <a
@@ -755,7 +840,8 @@
                     <span
                       class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
                     >
-                      Kunjungi Instagram @rizkypattiasina
+                      {{ 'Kunjungi Instagram @rizkypattiasina' if current_lang
+                      == 'id' else 'Visit Instagram @rizkypattiasina' }}
                     </span>
                   </a>
                   <a
@@ -766,7 +852,9 @@
                     <span
                       class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
                     >
-                      Kirim pesan email ke rizkypattiasina@gmail.com
+                      {{ 'Kirim pesan email ke rizkypattiasina@gmail.com' if
+                      current_lang == 'id' else 'Send an email to
+                      rizkypattiasina@gmail.com' }}
                     </span>
                   </a>
                 </div>
@@ -781,11 +869,16 @@
                   Full Stack Developer
                 </p>
                 <p class="text-sm text-gray-300">
-                  Mahasiswa Sistem Informasi Universitas Musamus. Rizky adalah
-                  pengembang yang memiliki pendekatan holistik terhadap
+                  {{ 'Mahasiswa Sistem Informasi Universitas Musamus. Rizky
+                  adalah pengembang yang memiliki pendekatan holistik terhadap
                   pembangunan aplikasi — mulai dari desain arsitektur backend
                   hingga antarmuka pengguna yang responsif. Fokus utamanya
-                  adalah menciptakan solusi digital yang handal dan scalable.
+                  adalah menciptakan solusi digital yang handal dan scalable.'
+                  if current_lang == 'id' else 'Information Systems student at
+                  Musamus University. Rizky is a developer with a holistic
+                  approach to application development — from backend
+                  architecture design to responsive user interfaces. His main
+                  focus is creating reliable and scalable digital solutions.' }}
                 </p>
               </div>
             </div>
@@ -807,7 +900,8 @@
                 />
                 <h3 class="text-xl font-bold">Adi Prasetyo</h3>
                 <h4 class="text-yellow-400 text-sm mt-1">
-                  Wakil Direktur PT. TOMA
+                  {{ 'Wakil Direktur PT. TOMA' if current_lang == 'id' else
+                  'Deputy Director of PT. TOMA' }}
                 </h4>
                 <div
                   class="flex justify-center space-x-4 text-lg text-white mt-8"
@@ -821,7 +915,8 @@
                     <span
                       class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
                     >
-                      Kunjungi GitHub adiprsty119
+                      {{ 'Kunjungi GitHub adiprsty119' if current_lang == 'id'
+                      else 'Visit GitHub adiprsty119' }}
                     </span>
                   </a>
                   <a
@@ -833,7 +928,8 @@
                     <span
                       class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
                     >
-                      Kunjungi Linkedin adiprsty119
+                      {{ 'Kunjungi Linkedin adiprsty119' if current_lang == 'id'
+                      else 'Visit LinkedIn @adiprsty119' }}
                     </span>
                   </a>
                   <a
@@ -844,7 +940,8 @@
                     <span
                       class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
                     >
-                      Kunjungi Instagram @adiprsty119
+                      {{ 'Kunjungi Instagram @adiprsty119' if current_lang ==
+                      'id' else 'Visit Instagram @adiprsty119' }}
                     </span>
                   </a>
                   <a
@@ -855,7 +952,9 @@
                     <span
                       class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
                     >
-                      Kirim pesan email ke adip98816@gmail.com
+                      {{ 'Kirim pesan email ke adip98816@gmail.com' if
+                      current_lang == 'id' else 'Send an email to
+                      adip98816@gmail.com' }}
                     </span>
                   </a>
                 </div>
@@ -870,11 +969,17 @@
                   Full Stack Developer
                 </p>
                 <p class="text-sm text-gray-300">
-                  Mahasiswa Jurusan Teknik Informatika Universitas Musamus. Adi
-                  adalah developer yang menggabungkan kreativitas dalam desain
-                  UI dengan keahlian teknis dalam pengelolaan sistem backend. Ia
-                  berkomitmen untuk membangun aplikasi yang efisien,
-                  user-friendly, dan siap digunakan dalam skala besar.
+                  {{ 'Mahasiswa Jurusan Teknik Informatika Universitas Musamus.
+                  Adi adalah developer yang menggabungkan kreativitas dalam
+                  desain UI dengan keahlian teknis dalam pengelolaan sistem
+                  backend. Ia berkomitmen untuk membangun aplikasi yang efisien,
+                  user-friendly, dan siap digunakan dalam skala besar.' if
+                  current_lang == 'id' else 'An Informatics Engineering student
+                  at Musamus University. Adi is a developer who combines
+                  creativity in UI design with technical expertise in backend
+                  system management. He is committed to building efficient,
+                  user-friendly applications that are ready for large-scale
+                  use.' }}
                 </p>
               </div>
             </div>
@@ -891,11 +996,13 @@
       <div class="container mx-auto px-6 mt-7">
         <div class="text-center mb-12">
           <h2 class="text-2xl text-yellow-400 font-semibold mb-4 pt-6">
-            Layanan Kami
+            {{ 'Layanan Kami' if current_lang == 'id' else 'Our Services' }}
           </h2>
           <p class="text-sm max-w-2xl mx-auto">
-            Berbagai layanan profesional yang kami tawarkan untuk mendukung
-            transformasi digital Anda.
+            {{ 'Berbagai layanan profesional yang kami tawarkan untuk mendukung
+            transformasi digital Anda.' if current_lang == 'id' else 'Various
+            professional services we offer to support your digital
+            transformation.' }}
           </p>
         </div>
 
@@ -910,10 +1017,15 @@
             <div class="text-yellow-400 text-4xl mb-4">
               <i class="fas fa-laptop-code bounce-on-hover"></i>
             </div>
-            <h3 class="text-xl font-bold mb-2">Pengembangan Website</h3>
+            <h3 class="text-xl font-bold mb-2">
+              {{ 'Pengembangan Website' if current_lang == 'id' else 'Website
+              Development' }}
+            </h3>
             <p class="text-sm">
-              Membangun aplikasi berbasis website yang modern, responsif, dan
-              aman sesuai kebutuhan Anda.
+              {{ 'Membangun aplikasi berbasis website yang modern, responsif,
+              dan aman sesuai kebutuhan Anda.' if current_lang == 'id' else
+              'Building a modern, responsive, and secure web-based application
+              tailored to your needs.' }}
             </p>
           </div>
 
@@ -924,10 +1036,15 @@
             <div class="text-yellow-400 text-4xl mb-4">
               <i class="fas fa-server shake-on-hover"></i>
             </div>
-            <h3 class="text-xl font-bold mb-2">Hosting & Server</h3>
+            <h3 class="text-xl font-bold mb-2">
+              {{ 'Hosting & Server' if current_lang == 'id' else 'Hosting &
+              Servers' }}
+            </h3>
             <p class="text-sm">
-              Menyediakan layanan hosting, server, dan domain dengan performa
-              tinggi dan dukungan teknis 24/7.
+              {{ 'Menyediakan layanan hosting, server, dan domain dengan
+              performa tinggi dan dukungan teknis 24/7.' if current_lang == 'id'
+              else 'Providing hosting, server, and domain services with high
+              performance and 24/7 technical support.' }}
             </p>
           </div>
 
@@ -938,10 +1055,15 @@
             <div class="text-yellow-400 text-4xl mb-4">
               <i class="fas fa-network-wired grow-on-hover"></i>
             </div>
-            <h3 class="text-xl font-bold mb-2">IT Infrastruktur</h3>
+            <h3 class="text-xl font-bold mb-2">
+              {{ 'IT Infrastruktur' if current_lang == 'id' else 'IT
+              Infrastructure' }}
+            </h3>
             <p class="text-sm">
-              Solusi lengkap untuk infrastruktur jaringan, perangkat keras, dan
-              sistem komunikasi internal perusahaan.
+              {{ 'Solusi lengkap untuk infrastruktur jaringan, perangkat keras,
+              dan sistem komunikasi internal perusahaan.' if current_lang ==
+              'id' else 'Comprehensive solutions for network infrastructure,
+              hardware, and internal company communication systems.' }}
             </p>
           </div>
 
@@ -952,10 +1074,14 @@
             <div class="text-yellow-400 text-4xl mb-4">
               <i class="fas fa-user-shield pulse-on-hover"></i>
             </div>
-            <h3 class="text-xl font-bold mb-2">Konsultasi IT</h3>
+            <h3 class="text-xl font-bold mb-2">
+              {{ 'Konsultasi IT' if current_lang == 'id' else 'IT Consulting' }}
+            </h3>
             <p class="text-sm">
-              Memberikan arahan dan strategi terbaik dalam implementasi
-              teknologi informasi di berbagai sektor.
+              {{ 'Memberikan arahan dan strategi terbaik dalam implementasi
+              teknologi informasi di berbagai sektor.' if current_lang == 'id'
+              else 'Providing guidance and the best strategies for implementing
+              information technology across various sectors.' }}
             </p>
           </div>
 
@@ -969,10 +1095,15 @@
                 <i class="fas fa-cog gear-right pl-0.5"></i>
               </div>
             </div>
-            <h3 class="text-xl font-bold mb-2">Sistem Informasi</h3>
+            <h3 class="text-xl font-bold mb-2">
+              {{ 'Sistem Informasi' if current_lang == 'id' else 'Information
+              System' }}
+            </h3>
             <p class="text-sm">
-              Pengembangan sistem informasi untuk manajemen data, pelaporan, dan
-              otomatisasi proses bisnis.
+              {{ 'Pengembangan sistem informasi untuk manajemen data, pelaporan,
+              dan otomatisasi proses bisnis.' if current_lang == 'id' else
+              'Development of information systems for data management,
+              reporting, and business process automation.' }}
             </p>
           </div>
 
@@ -983,10 +1114,15 @@
             <div class="text-yellow-400 text-4xl mb-4">
               <i class="fas fa-mobile-alt slide-up-on-hover"></i>
             </div>
-            <h3 class="text-xl font-bold mb-2">Aplikasi Mobile</h3>
+            <h3 class="text-xl font-bold mb-2">
+              {{ 'Aplikasi Mobile' if current_lang == 'id' else 'Mobile
+              Applications' }}
+            </h3>
             <p class="text-sm">
-              Pengembangan aplikasi Android/iOS yang responsif, ringan, dan
-              terintegrasi dengan sistem backend.
+              {{ 'Pengembangan aplikasi Android/iOS yang responsif, ringan, dan
+              terintegrasi dengan sistem backend.' if current_lang == 'id' else
+              'Development of responsive, lightweight Android/iOS applications
+              integrated with backend systems.' }}
             </p>
           </div>
         </div>
@@ -1001,11 +1137,14 @@
       <div class="container mx-auto px-6 mt-7">
         <div class="text-center mb-12">
           <h2 class="text-2xl text-yellow-400 font-semibold mb-4 pt-6">
-            Permintaan Layanan
+            {{ 'Permintaan Layanan' if current_lang == 'id' else 'Service
+            Request' }}
           </h2>
           <p class="text-sm max-w-2xl mx-auto">
-            Ajukan kebutuhan atau permintaan khusus Anda kepada tim kami. Kami
-            akan segera menghubungi Anda kembali.
+            {{ 'Ajukan kebutuhan atau permintaan khusus Anda kepada tim kami.
+            Kami akan segera menghubungi Anda kembali.' if current_lang == 'id'
+            else 'Submit your specific needs or requests to our team. We will
+            get back to you shortly.' }}
           </p>
         </div>
 
@@ -1017,16 +1156,16 @@
         >
           <!-- Nama -->
           <div class="text-left">
-            <label class="block text-sm font-medium mb-2" for="name"
-              >Nama Lengkap</label
-            >
+            <label class="block text-sm font-medium mb-2" for="name">
+              {{ 'Nama Lengkap' if current_lang == 'id' else 'Full Name' }}
+            </label>
             <input
               type="text"
               id="name"
               name="name"
               required
               class="w-full px-4 py-3 rounded-md bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-              placeholder="Masukkan nama Anda"
+              placeholder="{{ 'Masukkan nama Anda' if current_lang == 'id' else 'Enter your name' }}"
             />
           </div>
 
@@ -1047,9 +1186,9 @@
 
           <!-- Nomor HP -->
           <div class="text-left">
-            <label class="block text-sm font-medium mb-2" for="email"
-              >Nomor HP</label
-            >
+            <label class="block text-sm font-medium mb-2" for="email">
+              {{ 'Nomor HP' if current_lang == 'id' else 'Phone Number' }}
+            </label>
             <input
               type="text"
               id="nomor_hp"
@@ -1062,37 +1201,61 @@
 
           <!-- Jenis Layanan -->
           <div class="text-left">
-            <label class="block text-sm font-medium mb-2" for="tipe_aplikasi"
-              >Jenis Layanan</label
-            >
+            <label class="block text-sm font-medium mb-2" for="tipe_aplikasi">
+              {{ 'Jenis Layanan' if current_lang == 'id' else 'Type of Services'
+              }}
+            </label>
             <select
               id="tipe_aplikasi"
               name="tipe_aplikasi"
               required
               class="w-full px-4 py-3 rounded-md bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
             >
-              <option value="">-- Pilih Layanan --</option>
-              <option value="website">Pengembangan Website</option>
-              <option value="hosting-server">Hosting & Server</option>
-              <option value="konsultasi">Konsultasi IT</option>
-              <option value="network">Infrastruktur Jaringan</option>
-              <option value="mobile-app">Aplikasi Mobile</option>
-              <option value="other">Layanan Lainnya</option>
+              <option value="">
+                {{ '-- Pilih Layanan --' if current_lang == 'id' else '-- Select
+                Service --' }}
+              </option>
+              <option value="website">
+                {{ 'Pengembangan Website' if current_lang == 'id' else 'Website
+                Development' }}
+              </option>
+              <option value="hosting-server">
+                {{ 'Hosting & Server' if current_lang == 'id' else 'Hosting &
+                Servers' }}
+              </option>
+              <option value="konsultasi">
+                {{ 'Konsultasi IT' if current_lang == 'id' else 'IT Consulting'
+                }}
+              </option>
+              <option value="network">
+                {{ 'Infrastruktur Jaringan' if current_lang == 'id' else
+                'Network Infrastructure' }}
+              </option>
+              <option value="mobile-app">
+                {{ 'Aplikasi Mobile' if current_lang == 'id' else 'Mobile
+                Applications' }}
+              </option>
+              <option value="other">
+                {{ 'Layanan Lainnya' if current_lang == 'id' else 'Our Services'
+                }}
+              </option>
             </select>
           </div>
 
           <!-- Pesan -->
           <div class="text-left">
             <label class="block text-sm font-medium mb-2" for="deskripsi"
-              >Pesan / Detail Permintaan</label
-            >
+              >{{ 'Pesan / Detail Permintaan' if current_lang == 'id' else
+              'Message / Request Details' }}
+            </label>
             <textarea
               id="deskripsi"
               name="deskripsi"
               rows="5"
               required
               class="w-full px-4 py-3 rounded-md bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-              placeholder="Tuliskan kebutuhan atau pertanyaan Anda di sini..."
+              placeholder="{{ 'Tuliskan kebutuhan atau pertanyaan Anda di sini...' if current_lang == 'id' else
+              'Write your needs or questions here...' }}"
             ></textarea>
           </div>
 
@@ -1103,7 +1266,8 @@
               id="submitBtn"
               class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold px-6 py-3 rounded-md shadow-md transition duration-300 cursor-pointer"
             >
-              Kirim Permintaan
+              {{ 'Kirim Permintaan' if current_lang == 'id' else 'Submit
+              Request' }}
             </button>
           </div>
         </form>
@@ -1121,37 +1285,56 @@
             PT. TOMA CAHAYA NUSANTARA
           </h3>
           <p class="text-sm text-gray-400">
-            Solusi IT terpercaya dari Papua Selatan. Fokus pada pengembangan
-            aplikasi, server hosting, dan konsultasi digital.
+            {{ 'Solusi IT terpercaya dari Papua Selatan. Fokus pada pengembangan
+            aplikasi, server hosting, dan konsultasi digital.' if current_lang
+            == 'id' else 'Trusted IT solutions from South Papua. Focused on
+            application development, server hosting, and digital consulting.' }}
           </p>
         </div>
 
         <!-- Navigasi -->
         <div>
-          <h4 class="text-xl font-semibold mb-4">Navigasi</h4>
+          <h4 class="text-xl font-semibold mb-4">
+            {{ 'Layanan Kami' if current_lang == 'id' else 'Our Services' }}
+            Navigasi
+          </h4>
           <ul class="space-y-2 text-sm text-gray-400">
-            <li><a href="#home" class="hover:text-yellow-400">Beranda</a></li>
             <li>
-              <a href="#news" class="hover:text-yellow-400">Berita</a>
+              <a href="#home" class="hover:text-yellow-400">
+                {{ 'Beranda' if current_lang == 'id' else 'Home' }}
+              </a>
+            </li>
+            <li>
+              <a href="#news" class="hover:text-yellow-400">
+                {{ 'Berita' if current_lang == 'id' else 'News' }}
+              </a>
             </li>
             <li>
               <a href="#portfolio" class="hover:text-yellow-400">Portfolio</a>
             </li>
             <li>
-              <a href="#about" class="hover:text-yellow-400">Tentang Kami</a>
+              <a href="#about" class="hover:text-yellow-400">
+                {{ 'Tentang Kami' if current_lang == 'id' else 'About Us' }}</a
+              >
             </li>
             <li>
-              <a href="#services" class="hover:text-yellow-400">Layanan</a>
+              <a href="#services" class="hover:text-yellow-400">
+                {{ 'Layanan' if current_lang == 'id' else 'Services' }}</a
+              >
             </li>
             <li>
-              <a href="#request" class="hover:text-yellow-400">Permintaan</a>
+              <a href="#request" class="hover:text-yellow-400">
+                {{ 'Permintaan' if current_lang == 'id' else 'Request' }}</a
+              >
             </li>
           </ul>
         </div>
 
         <!-- Sosial Media -->
         <div>
-          <h4 class="text-xl font-semibold mb-4">Ikuti Kami</h4>
+          <h4 class="text-xl font-semibold mb-4">
+            {{ 'Ikuti Kami' if current_lang == 'id' else 'Follow Us' }}
+          </h4>
           <div class="flex justify-center md:justify-start gap-4 text-xl">
             <a
               href="https://facebook.com"
@@ -1162,7 +1345,8 @@
               <span
                 class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
               >
-                Kunjungi Facebook TOMA
+                {{ 'Kunjungi Facebook TOMA' if current_lang == 'id' else 'Visit
+                TOMA’s Facebook' }}
               </span>
             </a>
             <a
@@ -1174,7 +1358,8 @@
               <span
                 class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
               >
-                Kunjungi Instagram TOMA
+                {{ 'Kunjungi Instagram TOMA' if current_lang == 'id' else 'Visit
+                TOMA’s Instagram' }}
               </span>
             </a>
             <a
@@ -1186,7 +1371,8 @@
               <span
                 class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
               >
-                Kunjungi LinkedIn TOMA
+                {{ 'Kunjungi LinkedIn TOMA' if current_lang == 'id' else 'Visit
+                TOMA’s LinkedIn' }}
               </span>
             </a>
             <a
@@ -1197,7 +1383,8 @@
               <span
                 class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
               >
-                Kirim pesan email ke toma@gmail.com
+                {{ 'Kirim pesan email ke toma@gmail.com' if current_lang == 'id'
+                else 'Send an email message to toma@gmail.com' }}
               </span>
             </a>
           </div>
@@ -1229,7 +1416,10 @@
           class="bg-white text-red-600 w-full max-w-md p-6 rounded-2xl shadow-2xl border border-red-200 animate-fade-in"
         >
           <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold">Terjadi Kesalahan</h2>
+            <h2 class="text-xl font-bold">
+              {{ 'Terjadi Kesalahan' if current_lang == 'id' else 'An Error
+              Occurred' }}
+            </h2>
             <button
               onclick="closeError()"
               class="text-red-500 text-3xl hover:text-red-700 transition cursor-pointer"
@@ -1238,13 +1428,14 @@
             </button>
           </div>
           <p id="error-message" class="text-sm text-gray-700 mb-6">
-            Pesan error muncul di sini
+            {{ 'Pesan error muncul di sini' if current_lang == 'id' else 'Error
+            message appears here' }}
           </p>
           <button
             onclick="closeError()"
             class="w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition duration-200 cursor-pointer"
           >
-            Tutup
+            {{ 'Tutup' if current_lang == 'id' else 'Close' }}
           </button>
         </div>
       </div>
@@ -1259,7 +1450,9 @@
           class="w-full max-w-md p-6 rounded-2xl shadow-2xl border animate-fade-in {% if category == 'success' %} bg-green-100 text-green-700 border-green-300 {% else %} bg-red-100 text-red-700 border-red-300 {% endif %}"
         >
           <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold">Notifikasi</h2>
+            <h2 class="text-xl font-bold">
+              {{ 'Notifikasi' if current_lang == 'id' else 'Notification' }}
+            </h2>
             <button
               onclick="this.closest('.fixed').classList.add('hidden')"
               class="text-3xl hover:text-gray-700 transition cursor-pointer"
@@ -1272,7 +1465,7 @@
             onclick="this.closest('.fixed').classList.add('hidden')"
             class="w-full py-2 px-4 {% if category == 'success' %} bg-green-600 hover:bg-green-700 {% else %} bg-red-600 hover:bg-red-700 {% endif %} text-white font-medium rounded-lg transition duration-200 cursor-pointer"
           >
-            Tutup
+            {{ 'Tutup' if current_lang == 'id' else 'Close' }}
           </button>
         </div>
       </div>

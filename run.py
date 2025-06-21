@@ -569,6 +569,16 @@ def konfirmasi_dp(request_id):
 
     return render_template("konfirmasi_dp.html", request_data=req)
 
+@app.route('/set-language/<lang_code>')
+def set_language(lang_code):
+    if lang_code in ['id', 'en']:
+        session['lang'] = lang_code
+    return redirect(request.referrer or url_for('index'))
+
+@app.context_processor
+def inject_current_lang():
+    return dict(current_lang=session.get('lang', 'id'))
+
 @app.route("/news/")
 def news():
     return render_template("news.html")
