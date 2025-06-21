@@ -3,7 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login Page</title>
+    <title>
+      {{ 'Halaman Login' if current_lang == 'id' else 'Login Page' }}
+    </title>
     <!-- Tailwind CSS -->
     <link
       rel="stylesheet"
@@ -28,7 +30,7 @@
       <h1
         class="text-center text-gray-800 mb-12 text-3xl md:text-2xl font-semibold"
       >
-        Masuk ke Akun
+        {{ 'Masuk ke Akun' if current_lang == 'id' else 'Login Account' }}
       </h1>
 
       <!-- Social Account Login -->
@@ -42,12 +44,16 @@
             src="https://www.gstatic.com/images/branding/product/1x/gsa_48dp.png"
             alt="Google Logo"
           />
-          Masuk dengan Google
+          {{ 'Masuk dengan Google' if current_lang == 'id' else 'Login with
+          Google' }}
         </button>
       </div>
       <div class="flex items-center justify-center my-5 mb-6">
         <hr class="flex-grow border-t border-gray-300 mx-2.5" />
-        <span class="text-[0.9rem] text-gray-600">Or an account?</span>
+        <span class="text-[0.9rem] text-gray-600"
+          >{{ 'Atau sudah punya akun?' if current_lang == 'id' else 'Or an
+          account?' }}</span
+        >
         <hr class="flex-grow border-t border-gray-300 mx-2.5" />
       </div>
 
@@ -64,8 +70,8 @@
 
       <form id="loginForm" action="/login" method="post">
         <div class="mb-4">
-          <label class="block mb-2 text-xl text-gray-800" for="username"
-            >Username:</label
+          <label class="block mb-2 text-xl text-gray-800" for="username">
+            Username:</label
           >
           <input
             type="text"
@@ -78,13 +84,13 @@
         </div>
         <div class="mb-4">
           <label class="block mb-2 text-xl text-gray-800" for="password"
-            >Password:</label
+            >{{ 'Kata Sandi:' if current_lang == 'id' else 'Password:' }}</label
           >
           <input
             type="password"
             id="password"
             name="password"
-            placeholder="Password"
+            placeholder="{{ 'Kata Sandi' if current_lang == 'id' else 'Password' }}"
             required
             class="w-full p-3 text-[1rem] border border-gray-300 rounded-md outline-none box-border focus:border-green-500 focus:ring-2 focus:ring-green-300"
           />
@@ -93,7 +99,8 @@
           <a
             href="/find_account/"
             class="text-blue-800 no-underline text-[0.9rem] hover:underline"
-            >Lupa password?</a
+            >{{ 'Lupa password?' if current_lang == 'id' else 'Forgot password?'
+            }}</a
           >
         </p>
         <button
@@ -102,16 +109,18 @@
           value="login"
           class="w-full bg-green-600 hover:bg-green-700 text-white text-lg font-semibold py-3 px-5 rounded-lg transition cursor-pointer"
         >
-          Masuk
+          {{ 'Masuk' if current_lang == 'id' else 'Login' }}
         </button>
         <div class="w-full flex justify-between">
           <p class="text-[0.9rem] mt-6">
-            Belum punya akun?
+            {{ "Belum punya akun?" if current_lang == 'id' else "Don't have an
+            account?" }}
             <a
               href="/register/"
               class="text-blue-800 no-underline text-[0.9rem] hover:underline"
-              >Registrasi</a
             >
+              {{ 'Registrasi' if current_lang == 'id' else 'Registration' }}
+            </a>
           </p>
         </div>
       </form>

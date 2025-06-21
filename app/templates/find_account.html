@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cari Akun</title>
+    <title>{{ 'Cari Akun' if current_lang == 'id' else 'Find Account' }}</title>
     <!-- Tailwind CSS -->
     <link
       rel="stylesheet"
@@ -17,10 +17,12 @@
       <h1
         class="text-center text-gray-800 text-2xl md:text-3xl font-bold mb-10"
       >
-        Cari Akun Anda
+        {{ 'Cari Akun Anda' if current_lang == 'id' else 'Find Your Account' }}
       </h1>
       <p id="description" class="text-sm text-gray-500 mb-8 text-center">
-        Masukkan username dan email Anda untuk mencari akun Anda.
+        {{ 'Masukkan username dan email Anda untuk mencari akun Anda.' if
+        current_lang == 'id' else 'Please enter your username and email address
+        to search for your account' }}
       </p>
 
       <!-- Flash message Start -->
@@ -51,7 +53,7 @@
             type="text"
             id="username"
             name="username"
-            placeholder="Masukkan username"
+            placeholder="{{ 'Masukkan username' if current_lang == 'id' else 'Enter your username' }}"
             required
             autocomplete="off"
             class="w-full p-3 text-xl border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -70,7 +72,7 @@
             id="input-email-or-hp"
             type="email"
             name="email"
-            placeholder="Masukkan email"
+            placeholder="{{ 'Masukkan email' if current_lang == 'id' else 'Enter your email' }}"
             required
             autocomplete="off"
             class="w-full p-3 text-xl border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -83,14 +85,14 @@
             onclick="history.back()"
             class="w-full bg-green-600 hover:bg-green-700 text-white text-1xl font-semibold py-3 px-5 rounded-lg transition"
           >
-            Kembali
+            {{ 'Kembali' if current_lang == 'id' else 'Bakc' }}
           </button>
           <button
             type="submit"
             name="send"
             class="w-full bg-green-600 hover:bg-green-700 text-white text-1xl font-semibold py-3 px-5 rounded-lg transition"
           >
-            Cari
+            {{ 'Cari' if current_lang == 'id' else 'Search' }}
           </button>
         </div>
 
@@ -100,7 +102,8 @@
             type="button"
             class="w-full bg-blue-800 hover:bg-blue-900 text-white text-1xl font-semibold py-3 px-5 rounded-lg transition"
           >
-            Cari Menggunakan Nomor HP
+            {{ 'Cari Menggunakan Nomor HP' if current_lang == 'id' else 'Search
+            Using Phone Number' }}
           </button>
         </div>
       </form>
