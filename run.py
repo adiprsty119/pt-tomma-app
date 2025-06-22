@@ -579,6 +579,22 @@ def set_language(lang_code):
 def inject_current_lang():
     return dict(current_lang=session.get('lang', 'id'))
 
+@app.route('/set-theme/<theme>', methods=['POST'])
+def set_theme(theme):
+    if theme in ['light', 'dark']:
+        session['theme'] = theme
+    return redirect(request.referrer or url_for('index'))
+
+@app.route('/toggle-theme')
+def toggle_theme():
+    current_theme = session.get('theme', 'light')
+    session['theme'] = 'dark' if current_theme == 'light' else 'light'
+    return redirect(request.referrer or url_for('index'))
+
+@app.context_processor
+def inject_theme():
+    return dict(current_theme=session.get('theme', 'light'))
+
 @app.route("/news/")
 def news():
     return render_template("news.html")
@@ -593,6 +609,7 @@ def services():
 
 @app.route('/logout/')
 def logout():
+    session.clear()
     session.pop('username', None)
     flash("Anda telah logout.", "info")
     return redirect(url_for('index'))

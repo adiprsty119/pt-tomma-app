@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html
-  lang="en"
   x-data
-  x-init="$store.theme.isDark && document.documentElement.classList.add('dark')"
+  :class="{ 'dark': '{{ current_theme }}' === 'dark' }"
+  lang="{{ current_lang }}"
 >
   <head>
     <meta charset="UTF-8" />
@@ -53,11 +53,13 @@
     ></script>
   </head>
 
-  <body class="bg-background-dark text-white font-sans scroll-smooth">
+  <body
+    class="font-sans scroll-smooth {{ 'bg-background-dark text-white' if current_theme == 'dark' else 'bg-gray-100 text-black' }}"
+  >
     <!-- Header -->
     <header
       id="main-header"
-      class="fixed top-0 left-0 w-full bg-gray-900 bg-opacity-100 backdrop-blur transition-all duration-300 shadow z-50"
+      class="fixed top-0 left-0 w-full bg-opacity-100 backdrop-blur transition-all duration-300 shadow z-50 {{ 'bg-gray-900' if current_theme == 'dark' else 'bg-gray-100' }}"
       x-data="{ open: false }"
     >
       <div
@@ -73,11 +75,11 @@
 
         <!-- Center: Search + Language (Mobile) -->
         <div class="flex md:hidden items-center space-x-4">
-          <div class="relative w-64">
+          <div class="relative w-56">
             <input
               type="text"
               placeholder="{{ 'Cari...' if current_lang == 'id' else 'Search...' }}"
-              class="px-3 py-2 rounded-full bg-gray-700 text-white text-sm placeholder-gray-400 w-full"
+              class="px-3 py-2 rounded-full text-sm w-full {{ 'bg-gray-700 text-white placeholder-gray-400 focus:ring-yellow-400' if current_theme == 'dark' else 'bg-gray-100 border text-black placeholder-gray-400 focus:ring-gray-900' }}"
             />
             <div
               class="absolute inset-y-0 right-3 flex items-center pointer-events-none"
@@ -125,14 +127,22 @@
             </div>
           </div>
 
+          <!-- Sign Up -->
+          <a
+            href="/login/"
+            class="flex items-center justify-center gap-1 text-yellow-400 hover:text-yellow-300 transition text-2xl"
+            title="{{ 'Masuk ke Akun' if current_lang == 'id' else 'Login' }}"
+          >
+            <i class="fas fa-user-plus"></i>
+          </a>
+
           <!-- Notifikasi -->
           {% if session.get('username') %}
           <button
-            title="Notifikasi"
+            title="{{ 'Notifikasi' if current_lang == 'id' else 'Notification' }}"
             class="relative flex items-center justify-center text-yellow-400 hover:text-yellow-300 transition text-2xl cursor-pointer my-3"
           >
             <i class="fas fa-bell"></i>
-            <!-- Badge (Opsional) -->
             <span
               class="absolute -top-1 -right-1 text-[10px] bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center font-semibold"
             >
@@ -144,7 +154,7 @@
           <!-- Hamburger Icon (Mobile Only) -->
           <button
             @click="open = !open"
-            class="md:hidden text-white text-3xl focus:outline-none"
+            class="md:hidden text-3xl focus:outline-none {{ 'text-white' if current_theme == 'dark' else 'text-gray-900' }}"
             :aria-expanded="open.toString()"
             aria-label="Toggle navigation menu"
           >
@@ -186,12 +196,14 @@
               <input
                 type="text"
                 placeholder="{{ 'Cari...' if current_lang == 'id' else 'Search...' }}"
-                class="pl-4 pr-10 py-2 rounded-full bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                class="pl-4 pr-10 py-2 rounded-full focus:outline-none focus:ring-2  {{ 'bg-gray-700 text-white placeholder-gray-400 focus:ring-yellow-400' if current_theme == 'dark' else 'bg-gray-100 border text-black placeholder-gray-400 focus:ring-gray-900' }}"
               />
               <div
                 class="absolute inset-y-0 right-3 flex items-center pointer-events-none"
               >
-                <i class="fas fa-search text-gray-400 text-sm"></i>
+                <i
+                  class="fas fa-search text-sm {{ 'text-gray-400' if current_theme == 'dark' else 'text-gray-800' }}"
+                ></i>
               </div>
             </div>
 
@@ -237,8 +249,9 @@
             <!-- Dark Mode Toggle -->
             <button
               x-data
-              @click="$store.theme.toggle()"
-              :title="$store.theme.isDark ? '{{ 'Beralih ke Dark Mode' if current_lang == 'id' else 'Switch to Dark Mode' }}' : '{{ 'Beralih ke Light Mode' if current_lang == 'id' else 'Switch to Light Mode' }}'"
+              @click="$store.theme.toggle();
+              fetch(`/set-theme/${$store.theme.isDark ? 'dark' : 'light'}`, {method: 'POST',}).then(() => {window.location.reload();});"
+              :title="$store.theme.isDark ? '{{ 'Beralih ke Mode Terang' if current_lang == 'id' else 'Switch to Light Mode' }}' : '{{ 'Beralih ke Mode Gelap' if current_lang == 'id' else 'Switch to Dark Mode' }}'"
               class="relative w-[80px] flex justify-center items-center bg-gray-800 dark:bg-yellow-400 text-yellow-300 dark:text-gray-900 px-0.5 py-1.5 rounded-md text-sm font-semibold transition hover:brightness-110 cursor-pointer"
             >
               <template
@@ -249,7 +262,10 @@
                 x-transition:leave="opacity-100"
                 x-transition:leave-end="opacity-0"
               >
-                <span><i class="fas fa-sun"></i> Light</span>
+                <span
+                  ><i class="fas fa-sun"></i>{{ 'Light' if current_lang == 'en'
+                  else 'Terang' }}</span
+                >
               </template>
               <template
                 x-if="!$store.theme.isDark"
@@ -259,7 +275,10 @@
                 x-transition:leave="opacity-100"
                 x-transition:leave-end="opacity-0"
               >
-                <span><i class="fas fa-moon"></i> Dark</span>
+                <span
+                  ><i class="fas fa-moon"></i> {{ 'Dark' if current_lang == 'en'
+                  else 'Gelap' }}</span
+                >
               </template>
             </button>
 
@@ -301,7 +320,7 @@
         x-transition:leave="transition ease-in duration-75"
         x-transition:leave-start="opacity-100 scale-100"
         x-transition:leave-end="opacity-0 scale-95"
-        class="md:hidden bg-gray-900 px-6 pb-8 space-y-2 flex flex-col items-start text-start gap-2.5"
+        class="md:hidden px-6 pb-8 space-y-2 flex flex-col items-start text-start gap-2.5 {{ 'bg-gray-900' if current_theme == 'dark' else 'bg-gray-100' }}"
       >
         <hr class="self-stretch border-gray-700 mb-6" />
         <a
@@ -369,7 +388,7 @@
     <!-- Home Section -->
     <section
       id="home"
-      class="pt-24 min-h-screen flex items-center justify-center bg-gray-800 wow animate__animated animate__fadeInUp animate__delay-0.5s"
+      class="pt-24 min-h-screen flex items-center justify-center wow animate__animated animate__fadeInUp animate__delay-0.5s {{ 'bg-gray-800' if current_theme == 'dark' else 'bg-gray-300' }}"
     >
       <div
         class="container mx-auto px-6 flex flex-col mt-3.5 lg:flex-row items-center justify-between gap-10 text-white"
@@ -377,12 +396,14 @@
         <!-- Text Content -->
         <div class="flex-1 text-center lg:text-left">
           <h2
-            class="text-2xl mt-6 md:text-5xl font-extrabold mb-6 leading-tight"
+            class="text-2xl mt-6 md:text-5xl font-extrabold mb-6 leading-tight {{ 'text-white' if current_theme == 'dark' else 'text-black' }}"
           >
             {{ 'Selamat Datang di' if current_lang == 'id' else 'Welcome to' }}
             <span class="text-yellow-400">TOMA CAHAYA NUSANTARA</span>
           </h2>
-          <p class="text-sm md:text-xl mb-6">
+          <p
+            class="text-sm md:text-xl mb-6 {{ 'text-white' if current_theme == 'dark' else 'text-black' }}"
+          >
             {{ 'Kami adalah perusahaan IT yang berkomitmen membantu Anda dalam
             pengembangan aplikasi website, penyediaan server hosting, dan
             layanan konsultasi teknologi terbaik di Papua Selatan.' if
@@ -395,14 +416,14 @@
           >
             <a
               href="#services"
-              class="bg-yellow-400 text-gray-900 px-6 py-3 rounded-full font-semibold hover:bg-yellow-300 hover:ring-2 hover:ring-yellow-200 transition"
+              class="bg-yellow-400 px-6 py-3 rounded-full font-semibold hover:bg-yellow-300 hover:ring-2 hover:ring-yellow-200 transition {{ 'text-gray-900' if current_theme == 'dark' else 'text-white' }}"
             >
               {{ 'Jelajahi Layanan' if current_lang == 'id' else 'Explore
               Services' }}
             </a>
             <a
               href="#request"
-              class="border border-yellow-400 text-yellow-400 px-6 py-3 rounded-full font-semibold hover:bg-yellow-400 hover:text-gray-900 transition"
+              class="border border-yellow-400  px-6 py-3 rounded-full font-semibold hover:bg-yellow-400 transition {{ 'text-yellow-400 hover:text-gray-900' if current_theme == 'dark' else 'text-gray-900' }}"
             >
               {{ 'Ajukan Permintaan' if current_lang == 'id' else 'Submit
               Request' }}
@@ -448,11 +469,13 @@
     <!-- News Section -->
     <section
       id="news"
-      class="py-20 min-h-screen bg-gray-700 text-white wow animate__animated animate__fadeInUp animate__delay-0.5s"
+      class="py-20 min-h-screen wow animate__animated animate__fadeInUp animate__delay-0.5s {{ 'bg-gray-700 text-white' if current_theme == 'dark' else 'bg-gray-200 text-black' }}"
     >
       <div class="container mx-auto px-6 mt-7">
         <div class="text-center mb-12">
-          <h2 class="text-2xl text-yellow-400 font-semibold mb-4">
+          <h2
+            class="text-2xl font-semibold mb-4 {{ 'text-yellow-400' if current_theme == 'dark' else 'text-yellow-500' }}"
+          >
             {{ 'Berita Terbaru' if current_lang == 'id' else 'Latest News' }}
           </h2>
           <p class="text-sm">
@@ -465,7 +488,7 @@
         <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
           <!-- Card 1 -->
           <div
-            class="bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-yellow-400/30 transition cursor-pointer flex flex-col"
+            class="rounded-xl shadow-lg overflow-hidden hover:shadow-yellow-400/30 transition cursor-pointer flex flex-col {{ 'bg-gray-800' if current_theme == 'dark' else 'bg-white' }}"
           >
             <img
               src="{{ url_for('static', filename='images/') }}"
@@ -498,7 +521,7 @@
 
           <!-- Card 2 -->
           <div
-            class="bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-yellow-400/30 transition cursor-pointer flex flex-col"
+            class="rounded-xl shadow-lg overflow-hidden hover:shadow-yellow-400/30 transition cursor-pointer flex flex-col {{ 'bg-gray-800' if current_theme == 'dark' else 'bg-white' }}"
           >
             <img
               src="{{ url_for('static', filename='images/') }}"
@@ -530,7 +553,7 @@
 
           <!-- Card 3 -->
           <div
-            class="bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-yellow-400/30 transition cursor-pointer flex flex-col"
+            class="rounded-xl shadow-lg overflow-hidden hover:shadow-yellow-400/30 transition cursor-pointer flex flex-col {{ 'bg-gray-800' if current_theme == 'dark' else 'bg-white' }}"
           >
             <img
               src="{{ url_for('static', filename='images/') }}"
@@ -566,12 +589,14 @@
     <!-- Portfolio Section -->
     <section
       id="portfolio"
-      class="py-20 min-h-screen bg-gray-800 text-white wow animate__animated animate__fadeInUp animate__delay-0.5s"
+      class="py-20 min-h-screen wow animate__animated animate__fadeInUp animate__delay-0.5s {{ 'bg-gray-800 text-white' if current_theme == 'dark' else 'bg-gray-300 text-black' }}"
     >
       <div class="container mx-auto px-6 mt-7">
         <!-- Judul -->
         <div class="text-center mb-12">
-          <h2 class="text-2xl text-yellow-400 font-semibold mb-4 pt-6">
+          <h2
+            class="text-2xl font-semibold mb-4 pt-6 {{ 'text-yellow-400' if current_theme == 'dark' else 'text-yellow-500' }}"
+          >
             Portfolio
           </h2>
           <p class="text-sm">
@@ -585,7 +610,7 @@
         <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
           <!-- Card 1 -->
           <div
-            class="bg-gray-900 rounded-xl overflow-hidden shadow-lg group hover:shadow-yellow-400/30 transition cursor-pointer flex flex-col"
+            class="rounded-xl overflow-hidden shadow-lg group hover:shadow-yellow-400/30 transition cursor-pointer flex flex-col {{ 'bg-gray-900' if current_theme == 'dark' else 'bg-white' }}"
           >
             <!-- Gambar -->
             <img
@@ -617,7 +642,7 @@
 
           <!-- Card 2 -->
           <div
-            class="bg-gray-900 rounded-xl overflow-hidden shadow-lg group hover:shadow-yellow-400/30 transition cursor-pointer flex flex-col"
+            class="rounded-xl overflow-hidden shadow-lg group hover:shadow-yellow-400/30 transition cursor-pointer flex flex-col {{ 'bg-gray-900' if current_theme == 'dark' else 'bg-white' }}"
           >
             <!-- Gambar -->
             <img
@@ -650,7 +675,7 @@
 
           <!-- Card 3 -->
           <div
-            class="bg-gray-900 rounded-xl overflow-hidden shadow-lg group hover:shadow-yellow-400/30 transition cursor-pointer flex flex-col"
+            class="rounded-xl overflow-hidden shadow-lg group hover:shadow-yellow-400/30 transition cursor-pointer flex flex-col {{ 'bg-gray-900' if current_theme == 'dark' else 'bg-white' }}"
           >
             <!-- Gambar -->
             <img
@@ -689,11 +714,13 @@
     <!-- About Section -->
     <section
       id="about"
-      class="py-20 min-h-screen bg-gray-700 text-white wow animate__animated animate__fadeInUp animate__delay-0.5s"
+      class="py-20 min-h-screen wow animate__animated animate__fadeInUp animate__delay-0.5s {{ 'bg-gray-700 text-white' if current_theme == 'dark' else 'bg-gray-200 text-black' }}"
     >
       <div class="container mx-auto px-6 mt-7">
         <div class="text-center mb-12">
-          <h2 class="text-2xl text-yellow-400 font-semibold mb-4 pt-6">
+          <h2
+            class="text-2xl font-semibold mb-4 pt-6 {{ 'text-yellow-400' if current_theme == 'dark' else 'text-yellow-500' }}"
+          >
             {{ 'Tentang Kami' if current_lang == 'id' else 'About Us' }}
           </h2>
           <p class="text-sm max-w-2xl mx-auto">
@@ -766,11 +793,13 @@
     <!-- Developer Section -->
     <section
       id="developer"
-      class="py-20 min-h-screen bg-gray-800 text-white wow animate__animated animate__fadeInUp animate__delay-0.5s"
+      class="py-20 min-h-screen wow animate__animated animate__fadeInUp animate__delay-0.5s {{ 'bg-gray-800 text-white' if current_theme == 'dark' else 'bg-gray-300 text-black' }}"
     >
       <div class="container mx-auto px-6 mt-7">
         <div class="text-center mb-12">
-          <h2 class="text-2xl text-yellow-400 font-semibold mb-4 pt-6">
+          <h2
+            class="text-2xl font-semibold mb-4 pt-6 {{ 'text-yellow-400' if current_theme == 'dark' else 'text-yellow-500' }}"
+          >
             {{ 'Profil Pengembang' if current_lang == 'id' else 'Developer
             Profile' }}
           </h2>
@@ -791,7 +820,7 @@
             >
               <!-- Front Side -->
               <div
-                class="absolute w-full h-[350px] bg-gray-900 rounded-xl shadow-lg backface-hidden flex flex-col items-center justify-center text-center p-6 py-24 hover:shadow-yellow-400/30 transition cursor-pointer"
+                class="absolute w-full h-[350px] rounded-xl shadow-lg backface-hidden flex flex-col items-center justify-center text-center p-6 py-24 hover:shadow-yellow-400/30 transition cursor-pointer {{ 'bg-gray-900' if current_theme == 'dark' else 'bg-white' }}"
               >
                 <img
                   src="{{ url_for('static', filename='images/Rizky-Pattiasina.JPG') }}"
@@ -800,8 +829,8 @@
                 />
                 <h3 class="text-xl font-bold">Rizky Pattiasina</h3>
                 <h4 class="text-yellow-400 text-sm mt-1">
-                  {{ 'Direktur PT. TOMA' if current_lang == 'id' else 'Director
-                  of PT. TOMA' }}
+                  {{ 'Direktur CV. TOMA' if current_lang == 'id' else 'Director
+                  of CV. TOMA' }}
                 </h4>
                 <div
                   class="flex justify-center space-x-4 text-lg text-white mt-8"
@@ -809,7 +838,7 @@
                   <a
                     href="https://github.com/rizkypattiasina"
                     target="_blank"
-                    class="hover:text-yellow-400 relative group"
+                    class="relative group {{ 'text-yellow-400' if current_theme == 'dark' else 'text-gray-800 hover:text-gray-900' }}"
                   >
                     <i class="fab fa-github"></i>
                     <span
@@ -822,7 +851,7 @@
                   <a
                     href="https://www.linkedin.com/in/rizky-pattiasina-066b17219?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
                     target="_blank"
-                    class="hover:text-yellow-400 relative group"
+                    class="relative group {{ 'text-yellow-400' if current_theme == 'dark' else 'text-gray-800 hover:text-gray-900' }}"
                   >
                     <i class="fab fa-linkedin"></i>
                     <span
@@ -834,7 +863,7 @@
                   </a>
                   <a
                     href="https://www.instagram.com/pattirizky_?igsh=aHlsbGNuendrajZx"
-                    class="hover:text-yellow-400 relative group"
+                    class="relative group {{ 'text-yellow-400' if current_theme == 'dark' else 'text-gray-800 hover:text-gray-900' }}"
                   >
                     <i class="fa-brands fa-instagram"></i>
                     <span
@@ -846,7 +875,7 @@
                   </a>
                   <a
                     href="rizkypattiasina@gmail.com"
-                    class="hover:text-yellow-400 relative group"
+                    class="relative group {{ 'text-yellow-400' if current_theme == 'dark' else 'text-gray-800 hover:text-gray-900' }}"
                   >
                     <i class="fas fa-envelope"></i>
                     <span
@@ -862,7 +891,7 @@
 
               <!-- Back Side -->
               <div
-                class="absolute w-full h-[350px] bg-gray-800 rounded-xl shadow-lg backface-hidden rotate-y-180 flex flex-col items-center justify-center text-center p-6 py-24 hover:shadow-yellow-400/30 transition cursor-pointer"
+                class="absolute w-full h-[350px] rounded-xl shadow-lg backface-hidden rotate-y-180 flex flex-col items-center justify-center text-center p-6 py-24 hover:shadow-yellow-400/30 transition cursor-pointer {{ 'bg-gray-800' if current_theme == 'dark' else 'bg-white' }}"
               >
                 <h3 class="text-xl font-bold mb-2">Rizky Pattiasina</h3>
                 <p class="text-yellow-400 font-semibold mb-2">
@@ -891,7 +920,7 @@
             >
               <!-- Front Side -->
               <div
-                class="absolute w-full h-[350px] bg-gray-900 rounded-xl shadow-lg backface-hidden flex flex-col items-center justify-center text-center p-6 py-24 hover:shadow-yellow-400/30 transition cursor-pointer"
+                class="absolute w-full h-[350px] rounded-xl shadow-lg backface-hidden flex flex-col items-center justify-center text-center p-6 py-24 hover:shadow-yellow-400/30 transition cursor-pointer {{ 'bg-gray-900' if current_theme == 'dark' else 'bg-white' }}"
               >
                 <img
                   src="{{ url_for('static', filename='images/Adi-Prasetyo.JPG') }}"
@@ -899,9 +928,9 @@
                   class="w-44 h-44 rounded-full object-cover mb-4"
                 />
                 <h3 class="text-xl font-bold">Adi Prasetyo</h3>
-                <h4 class="text-yellow-400 text-sm mt-1">
-                  {{ 'Wakil Direktur PT. TOMA' if current_lang == 'id' else
-                  'Deputy Director of PT. TOMA' }}
+                <h4 class="text-sm mt-1 text-yellow-400">
+                  {{ 'Wakil Direktur CV. TOMA' if current_lang == 'id' else
+                  'Deputy Director of CV. TOMA' }}
                 </h4>
                 <div
                   class="flex justify-center space-x-4 text-lg text-white mt-8"
@@ -909,7 +938,7 @@
                   <a
                     href="https://github.com/adiprsty119"
                     target="_blank"
-                    class="hover:text-yellow-400 relative group"
+                    class="relative group {{ 'text-yellow-400' if current_theme == 'dark' else 'text-gray-800 hover:text-gray-900' }}"
                   >
                     <i class="fab fa-github"></i>
                     <span
@@ -922,7 +951,7 @@
                   <a
                     href="https://www.linkedin.com/in/adi-prasetyo-86808528b/"
                     target="_blank"
-                    class="hover:text-yellow-400 relative group"
+                    class="relative group {{ 'text-yellow-400' if current_theme == 'dark' else 'text-gray-800 hover:text-gray-900' }}"
                   >
                     <i class="fab fa-linkedin"></i>
                     <span
@@ -934,7 +963,7 @@
                   </a>
                   <a
                     href="https://www.instagram.com/adiprsty119/profilecard/?igsh=NzdjOGgyeWhnMjZw"
-                    class="hover:text-yellow-400 relative group"
+                    class="relative group {{ 'text-yellow-400' if current_theme == 'dark' else 'text-gray-800 hover:text-gray-900' }}"
                   >
                     <i class="fa-brands fa-instagram"></i>
                     <span
@@ -946,7 +975,7 @@
                   </a>
                   <a
                     href="adip98816@gmail.com"
-                    class="hover:text-yellow-400 relative group"
+                    class="relative group {{ 'text-yellow-400' if current_theme == 'dark' else 'text-gray-800 hover:text-gray-900' }}"
                   >
                     <i class="fas fa-envelope"></i>
                     <span
@@ -962,10 +991,12 @@
 
               <!-- Back Side -->
               <div
-                class="absolute w-full h-[350px] bg-gray-800 rounded-xl shadow-lg backface-hidden rotate-y-180 flex flex-col items-center justify-center text-center p-6 py-24 hover:shadow-yellow-400/30 transition cursor-pointer"
+                class="absolute w-full h-[350px] rounded-xl shadow-lg backface-hidden rotate-y-180 flex flex-col items-center justify-center text-center p-6 py-24 hover:shadow-yellow-400/30 transition cursor-pointer {{ 'bg-gray-800' if current_theme == 'dark' else 'bg-white' }}"
               >
                 <h3 class="text-xl font-bold mb-2">Adi Prasetyo</h3>
-                <p class="text-yellow-400 font-semibold mb-2">
+                <p
+                  class="font-semibold mb-2 {{ 'text-yellow-400' if current_theme == 'dark' else 'text-yellow-600' }}"
+                >
                   Full Stack Developer
                 </p>
                 <p class="text-sm text-gray-300">
@@ -991,11 +1022,13 @@
     <!-- Services Section -->
     <section
       id="services"
-      class="py-20 min-h-screen bg-gray-700 text-white wow animate__animated animate__fadeInUp animate__delay-0.5s"
+      class="py-20 min-h-screen wow animate__animated animate__fadeInUp animate__delay-0.5s {{ 'bg-gray-700 text-white' if current_theme == 'dark' else 'bg-gray-200 text-black' }}"
     >
       <div class="container mx-auto px-6 mt-7">
         <div class="text-center mb-12">
-          <h2 class="text-2xl text-yellow-400 font-semibold mb-4 pt-6">
+          <h2
+            class="text-2xl font-semibold mb-4 pt-6 {{ 'text-yellow-400' if current_theme == 'dark' else 'text-yellow-500' }}"
+          >
             {{ 'Layanan Kami' if current_lang == 'id' else 'Our Services' }}
           </h2>
           <p class="text-sm max-w-2xl mx-auto">
@@ -1012,7 +1045,7 @@
         >
           <!-- Layanan 1 -->
           <div
-            class="bg-gray-800 p-6 rounded-xl shadow-md text-center cursor-pointer hover:bg-gray-900 hover:shadow-yellow-400/30 transition duration-300 hover-parent"
+            class="p-6 rounded-xl shadow-md text-center cursor-pointer hover:shadow-yellow-400/30 transition duration-300 hover-parent {{ 'bg-gray-800 hover:bg-gray-900' if current_theme == 'dark' else 'bg-white hover:bg-gray-50' }}"
           >
             <div class="text-yellow-400 text-4xl mb-4">
               <i class="fas fa-laptop-code bounce-on-hover"></i>
@@ -1031,7 +1064,7 @@
 
           <!-- Layanan 2 -->
           <div
-            class="bg-gray-800 p-6 rounded-xl shadow-md text-center cursor-pointer hover:bg-gray-900 hover:shadow-yellow-400/30 transition duration-300 hover-parent"
+            class="p-6 rounded-xl shadow-md text-center cursor-pointer hover:shadow-yellow-400/30 transition duration-300 hover-parent {{ 'bg-gray-800 hover:bg-gray-900' if current_theme == 'dark' else 'bg-white hover:bg-gray-50' }}"
           >
             <div class="text-yellow-400 text-4xl mb-4">
               <i class="fas fa-server shake-on-hover"></i>
@@ -1050,7 +1083,7 @@
 
           <!-- Layanan 3 -->
           <div
-            class="bg-gray-800 p-6 rounded-xl shadow-md text-center cursor-pointer hover:bg-gray-900 hover:shadow-yellow-400/30 transition duration-300 hover-parent"
+            class="p-6 rounded-xl shadow-md text-center cursor-pointer hover:shadow-yellow-400/30 transition duration-300 hover-parent {{ 'bg-gray-800 hover:bg-gray-900' if current_theme == 'dark' else 'bg-white hover:bg-gray-50' }}"
           >
             <div class="text-yellow-400 text-4xl mb-4">
               <i class="fas fa-network-wired grow-on-hover"></i>
@@ -1069,7 +1102,7 @@
 
           <!-- Layanan 4 -->
           <div
-            class="bg-gray-800 p-6 rounded-xl shadow-md text-center cursor-pointer hover:bg-gray-900 hover:shadow-yellow-400/30 transition duration-300 hover-parent"
+            class="p-6 rounded-xl shadow-md text-center cursor-pointer hover:shadow-yellow-400/30 transition duration-300 hover-parent {{ 'bg-gray-800 hover:bg-gray-900' if current_theme == 'dark' else 'bg-white hover:bg-gray-50' }}"
           >
             <div class="text-yellow-400 text-4xl mb-4">
               <i class="fas fa-user-shield pulse-on-hover"></i>
@@ -1087,7 +1120,7 @@
 
           <!-- Layanan 5 -->
           <div
-            class="bg-gray-800 p-6 rounded-xl shadow-md text-center cursor-pointer hover:bg-gray-900 hover:shadow-yellow-400/30 transition duration-300 hover-parent"
+            class="p-6 rounded-xl shadow-md text-center cursor-pointer hover:shadow-yellow-400/30 transition duration-300 hover-parent {{ 'bg-gray-800 hover:bg-gray-900' if current_theme == 'dark' else 'bg-white hover:bg-gray-50' }}"
           >
             <div class="text-yellow-400 text-4xl mb-4">
               <div class="gear-container">
@@ -1109,7 +1142,7 @@
 
           <!-- Layanan 6 -->
           <div
-            class="bg-gray-800 p-6 rounded-xl shadow-md text-center cursor-pointer hover:bg-gray-900 hover:shadow-yellow-400/30 transition duration-300 hover-parent"
+            class="p-6 rounded-xl shadow-md text-center cursor-pointer hover:shadow-yellow-400/30 transition duration-300 hover-parent {{ 'bg-gray-800 hover:bg-gray-900' if current_theme == 'dark' else 'bg-white hover:bg-gray-50' }}"
           >
             <div class="text-yellow-400 text-4xl mb-4">
               <i class="fas fa-mobile-alt slide-up-on-hover"></i>
@@ -1132,11 +1165,13 @@
     <!-- Request Section -->
     <section
       id="request"
-      class="py-20 min-h-screen bg-gray-800 text-white wow animate__animated animate__fadeInUp animate__delay-0.5s"
+      class="py-20 min-h-screen wow animate__animated animate__fadeInUp animate__delay-0.5s {{ 'bg-gray-800 text-white' if current_theme == 'dark' else 'bg-gray-300 text-black' }}"
     >
       <div class="container mx-auto px-6 mt-7">
         <div class="text-center mb-12">
-          <h2 class="text-2xl text-yellow-400 font-semibold mb-4 pt-6">
+          <h2
+            class="text-2xl font-semibold mb-4 pt-6 {{ 'text-yellow-400' if current_theme == 'dark' else 'text-gray-900' }}"
+          >
             {{ 'Permintaan Layanan' if current_lang == 'id' else 'Service
             Request' }}
           </h2>
@@ -1150,7 +1185,7 @@
 
         <!-- Form -->
         <form
-          class="max-w-3xl mx-auto bg-gray-900 p-8 rounded-xl shadow-lg space-y-6 hover:shadow-yellow-400/30 transition"
+          class="max-w-3xl mx-auto p-8 rounded-xl shadow-lg space-y-6 transition {{ 'bg-gray-800 hover:shadow-yellow-400/30' if current_theme == 'dark' else 'bg-white hover:shadow-yellow-400/30' }}"
           action="/request/"
           method="post"
         >
@@ -1164,7 +1199,7 @@
               id="name"
               name="name"
               required
-              class="w-full px-4 py-3 rounded-md bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              class="w-full px-4 py-3 rounded-md border focus:outline-none focus:ring-2 {{ 'bg-gray-800 text-white border-gray-600 focus:ring-yellow-400' if current_theme == 'dark' else 'bg-white focus:ring-gray-900' }}"
               placeholder="{{ 'Masukkan nama Anda' if current_lang == 'id' else 'Enter your name' }}"
             />
           </div>
@@ -1179,7 +1214,7 @@
               id="email"
               name="email"
               required
-              class="w-full px-4 py-3 rounded-md bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              class="w-full px-4 py-3 rounded-md border focus:outline-none focus:ring-2 {{ 'bg-gray-800 text-white border-gray-600 focus:ring-yellow-400' if current_theme == 'dark' else 'bg-white focus:ring-gray-900' }}"
               placeholder="you@example.com"
             />
           </div>
@@ -1194,7 +1229,7 @@
               id="nomor_hp"
               name="nomor_hp"
               required
-              class="w-full px-4 py-3 rounded-md bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              class="w-full px-4 py-3 rounded-md border focus:outline-none focus:ring-2 {{ 'bg-gray-800 text-white border-gray-600 focus:ring-yellow-400' if current_theme == 'dark' else 'bg-white focus:ring-gray-900' }}"
               placeholder="0812xxxxxxxx"
             />
           </div>
@@ -1209,7 +1244,7 @@
               id="tipe_aplikasi"
               name="tipe_aplikasi"
               required
-              class="w-full px-4 py-3 rounded-md bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              class="w-full px-4 py-3 rounded-md  border focus:outline-none focus:ring-2 {{ 'bg-gray-800 text-white border-gray-600 focus:ring-yellow-400' if current_theme == 'dark' else 'bg-white focus:ring-gray-900' }}"
             >
               <option value="">
                 {{ '-- Pilih Layanan --' if current_lang == 'id' else '-- Select
@@ -1253,7 +1288,7 @@
               name="deskripsi"
               rows="5"
               required
-              class="w-full px-4 py-3 rounded-md bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              class="w-full px-4 py-3 rounded-md border focus:outline-none focus:ring-2 {{ 'bg-gray-800 text-white border-gray-600 focus:ring-yellow-400' if current_theme == 'dark' else 'bg-white focus:ring-gray-900' }}"
               placeholder="{{ 'Tuliskan kebutuhan atau pertanyaan Anda di sini...' if current_lang == 'id' else
               'Write your needs or questions here...' }}"
             ></textarea>
@@ -1275,14 +1310,16 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-12">
+    <footer
+      class="py-12 {{ 'bg-gray-900 text-white' if current_theme == 'dark' else 'bg-gray-100 text-gray-900' }}"
+    >
       <div
         class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left"
       >
         <!-- Logo / Perusahaan -->
         <div>
           <h3 class="text-2xl font-bold mb-4 text-yellow-400">
-            PT. TOMA CAHAYA NUSANTARA
+            CV. TOMA CAHAYA NUSANTARA
           </h3>
           <p class="text-sm text-gray-400">
             {{ 'Solusi IT terpercaya dari Papua Selatan. Fokus pada pengembangan
@@ -1298,32 +1335,53 @@
             {{ 'Layanan Kami' if current_lang == 'id' else 'Our Services' }}
             Navigasi
           </h4>
-          <ul class="space-y-2 text-sm text-gray-400">
+          <ul
+            class="space-y-2 text-sm {{ 'text-gray-400' if current_theme == 'dark' else 'text-gray-700' }}"
+          >
             <li>
-              <a href="#home" class="hover:text-yellow-400">
+              <a
+                href="#home"
+                class="{{ 'hover:text-yellow-400' if current_theme == 'dark' else 'hover:text-gray-900 hover:font-bold' }}"
+              >
                 {{ 'Beranda' if current_lang == 'id' else 'Home' }}
               </a>
             </li>
             <li>
-              <a href="#news" class="hover:text-yellow-400">
+              <a
+                href="#news"
+                class="{{ 'hover:text-yellow-400' if current_theme == 'dark' else 'hover:text-gray-900 hover:font-bold' }}"
+              >
                 {{ 'Berita' if current_lang == 'id' else 'News' }}
               </a>
             </li>
             <li>
-              <a href="#portfolio" class="hover:text-yellow-400">Portfolio</a>
+              <a
+                href="#portfolio"
+                class="{{ 'hover:text-yellow-400' if current_theme == 'dark' else 'hover:text-gray-900 hover:font-bold' }}"
+                >Portfolio</a
+              >
             </li>
             <li>
-              <a href="#about" class="hover:text-yellow-400">
+              <a
+                href="#about"
+                class="{{ 'hover:text-yellow-400' if current_theme == 'dark' else 'hover:text-gray-900 hover:font-bold' }}"
+              >
                 {{ 'Tentang Kami' if current_lang == 'id' else 'About Us' }}</a
               >
             </li>
             <li>
-              <a href="#services" class="hover:text-yellow-400">
+              <a
+                href="#services"
+                class="{{ 'hover:text-yellow-400' if current_theme == 'dark' else 'hover:text-gray-900 hover:font-bold' }}"
+              >
                 {{ 'Layanan' if current_lang == 'id' else 'Services' }}</a
               >
             </li>
             <li>
-              <a href="#request" class="hover:text-yellow-400">
+              <a
+                href="#request"
+                class="{{ 'hover:text-yellow-400' if current_theme == 'dark' else 'hover:text-gray-900 hover:font-bold' }}"
+              >
                 {{ 'Permintaan' if current_lang == 'id' else 'Request' }}</a
               >
             </li>
@@ -1339,7 +1397,7 @@
             <a
               href="https://facebook.com"
               target="_blank"
-              class="hover:text-yellow-400 relative group"
+              class="relative group {{ 'hover:text-yellow-400' if current_theme == 'dark' else 'hover:text-gray-900' }}"
             >
               <i class="fab fa-facebook-f"></i>
               <span
@@ -1352,7 +1410,7 @@
             <a
               href="https://www.instagram.com/id.toma?utm_source=ig_web_button_share_sheet&igsh=MW5sNzk3MG4wdXo5eA=="
               target="_blank"
-              class="hover:text-yellow-400 relative group"
+              class="relative group {{ 'hover:text-yellow-400' if current_theme == 'dark' else 'hover:text-gray-900' }}"
             >
               <i class="fab fa-instagram"></i>
               <span
@@ -1365,7 +1423,7 @@
             <a
               href="https://linkedin.com"
               target="_blank"
-              class="hover:text-yellow-400 relative group"
+              class="relative group {{ 'hover:text-yellow-400' if current_theme == 'dark' else 'hover:text-gray-900' }}"
             >
               <i class="fab fa-linkedin-in"></i>
               <span
@@ -1377,7 +1435,7 @@
             </a>
             <a
               href="mailto:info@tomma.co"
-              class="hover:text-yellow-400 relative group"
+              class="relative group {{ 'hover:text-yellow-400' if current_theme == 'dark' else 'hover:text-gray-900' }}"
             >
               <i class="fas fa-envelope"></i>
               <span
@@ -1394,7 +1452,8 @@
       <!-- Dark Mode Toggle (Mobile) -->
       <div class="fixed bottom-4 right-4 z-[9999] md:hidden" x-data>
         <button
-          @click="$store.theme.toggle()"
+          @click="$store.theme.toggle();
+          fetch(`/set-theme/${$store.theme.isDark ? 'dark' : 'light'}`, {method: 'POST',}).then(() => {window.location.reload();});"
           class="w-14 h-14 flex justify-center items-center bg-gray-800 dark:bg-yellow-400 text-yellow-300 dark:text-gray-900 rounded-full shadow-lg transition hover:brightness-110 cursor-pointer"
           aria-label="Toggle Dark Mode"
         >
