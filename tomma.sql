@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 18, 2025 at 12:49 AM
+-- Generation Time: Jun 23, 2025 at 05:18 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,19 @@ SET time_zone = "+00:00";
 --
 -- Database: `tomma`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `notifications`
+--
+
+CREATE TABLE `notifications` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `is_read` tinyint(1) DEFAULT NULL,
+  `message` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -113,23 +126,32 @@ CREATE TABLE `users` (
   `email` varchar(255) NOT NULL,
   `jenis_kelamin` varchar(255) DEFAULT NULL,
   `usia` varchar(255) DEFAULT NULL,
-  `foto` varchar(255) NOT NULL,
+  `foto` varchar(255) DEFAULT NULL,
   `nomor_hp` varchar(255) DEFAULT NULL,
-  `level` enum('admin','user') NOT NULL,
+  `level` enum('admin','user') DEFAULT NULL,
   `reset_token` varchar(255) DEFAULT NULL,
-  `token_exp` datetime NOT NULL
+  `token_exp` datetime DEFAULT NULL,
+  `login_method` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `password`, `nama_lengkap`, `email`, `jenis_kelamin`, `usia`, `foto`, `nomor_hp`, `level`, `reset_token`, `token_exp`) VALUES
-(10, 'adip98816_6984', 'pbkdf2:sha256:1000000$Ti20nbTdyoV3ILWL$b97c81ab2fdb852d37866d88f9ae24ecc19fd627c78bd1b6b239f4f5a0eb671e', 'Adhy Prasetyo', 'adip98816@gmail.com', NULL, NULL, 'https://lh3.googleusercontent.com/a/ACg8ocIZbPS94gyLY8YZA1terogtZlCSDWWif7wnqKf3QvvvBF2rutSf=s96-c', NULL, 'user', '', '2025-06-17 23:21:25');
+INSERT INTO `users` (`id`, `username`, `password`, `nama_lengkap`, `email`, `jenis_kelamin`, `usia`, `foto`, `nomor_hp`, `level`, `reset_token`, `token_exp`, `login_method`) VALUES
+(10, 'adip98816_6984', 'pbkdf2:sha256:1000000$Ti20nbTdyoV3ILWL$b97c81ab2fdb852d37866d88f9ae24ecc19fd627c78bd1b6b239f4f5a0eb671e', 'Adhy Prasetyo', 'adip98816@gmail.com', NULL, NULL, 'https://lh3.googleusercontent.com/a/ACg8ocIZbPS94gyLY8YZA1terogtZlCSDWWif7wnqKf3QvvvBF2rutSf=s96-c', NULL, 'user', '', '2025-06-17 23:21:25', NULL),
+(11, 'adhyq119', 'pbkdf2:sha256:1000000$TDJdGxOJvwZ5YqxE$8882e0db7e88e0a7218f49caa24b7b8b1eadd88b06fc25f15dfc44f23658f6bb', 'Adi Prasetyo', 'adip98817@gmail.com', NULL, NULL, NULL, NULL, 'user', '', '2025-06-18 08:25:38', NULL);
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `notifications`
+--
+ALTER TABLE `notifications`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `portfolios`
@@ -166,6 +188,12 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `notifications`
+--
+ALTER TABLE `notifications`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `portfolios`
 --
 ALTER TABLE `portfolios`
@@ -193,7 +221,17 @@ ALTER TABLE `testimonials`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `notifications`
+--
+ALTER TABLE `notifications`
+  ADD CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `notifications` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

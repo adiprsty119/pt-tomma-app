@@ -61,6 +61,7 @@
       <!-- Flash message End -->
 
       <form id="registerForm" action="/register" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div class="mb-4">
           <label class="block mb-1 text-lg text-gray-800" for="fullName"
             >{{ 'Nama Lengkap:' if current_lang == 'id' else 'Full Name'
