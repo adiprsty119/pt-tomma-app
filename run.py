@@ -575,7 +575,6 @@ def reset_password():
 @app.route("/")
 @app.route("/index/")
 def index():
-    print("📦 Session saat masuk index:", dict(session))
     username = None
     user_data = None
     notification_count = 0
@@ -596,7 +595,7 @@ def index():
         user_id = user_data.get('id')
         if user_id:
             notification_count = Notification.query.filter_by(user_id=user_id, is_read=False).count()
-    return render_template('index.html', username=username, notification_count=notification_count, user_data=user_data, first_time_login=first_time_login)
+    return render_template('index.html', username=username, notification_count=notification_count, user_data=user_data, first_time_login=first_time_login, debug_theme=session.get("theme"))
 
 @app.before_request
 def check_session():
@@ -692,8 +691,11 @@ def inject_current_lang():
 
 @app.route('/set-theme/<theme>', methods=['POST'])
 def set_theme(theme):
+    print("📥 Menerima perubahan tema ke:", theme)
     if theme in ['light', 'dark']:
         session['theme'] = theme
+        session.modified = True
+        print("💾 Disimpan di session:", session['theme'])
         return '', 204
     return 'Invalid theme', 400
 
