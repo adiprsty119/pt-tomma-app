@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template, request as flask_request, redirect, url_for, flash, session, jsonify
+from flask_session import Session
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import create_app, db
@@ -21,7 +22,16 @@ import os
 import re
 from dotenv import load_dotenv
 
+load_dotenv()
+
 app = create_app()
+app.config['SESSION_FILE_DIR'] = os.path.join(app.root_path, 'flask_session')
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_USE_SIGNER'] = True
+app.secret_key = os.getenv("APP_SECRET_KEY")
+Session(app)
+
 csrf = CSRFProtect(app)
 app.config.from_object(Config)
 limiter = Limiter(get_remote_address, app=app)
@@ -117,17 +127,21 @@ def generate_verification_code():
 def handle_csrf_error(e):
     return render_template("400.html", message="Permintaan tidak valid. Silakan muat ulang halaman."), 400
 
-@app.context_processor
-def inject_notifications():
-    if 'username' in session:
-        user = Users.query.filter_by(username=session['username']).first()
-        unread_count = Notification.query.filter_by(user_id=user.id, is_read=False).count()
-        return dict(notification_count=unread_count)
-    return dict(notification_count=0)
-
 @app.errorhandler(429)
 def ratelimit_handler(e):
     return render_template("429.html", message="Terlalu banyak percobaan login. Silakan coba lagi nanti."), 429
+
+@app.context_processor
+def inject_notifications():
+    user = None
+    unread_count = 0
+    if session.get('username'):
+        user = Users.query.filter_by(username=session.get('username')).first()
+    elif session.get('user'):
+        user = Users.query.filter_by(username=session['user'].get('username')).first()
+    if user:
+        unread_count = Notification.query.filter_by(user_id=user.id, is_read=False).count()
+    return dict(notification_count=unread_count)
 
 # Endpoint login
 @app.route('/login/', methods=['GET', 'POST'])
@@ -152,7 +166,8 @@ def login():
             safe_username = escape(username)
             logging.info(f"User '{username}' berhasil login.")
             flash(f"Login berhasil! Selamat datang, {safe_username}.", "success")
-            return redirect(url_for('index'))  # Arahkan ke halaman utama setelah login
+            session['first_time_login'] = True
+            return redirect(url_for('index')) 
     return render_template('login.html', form=form)
 
 # Endpoint login with Google
@@ -190,6 +205,7 @@ def login_google_callback():
     
     user = Users.query.filter_by(email=email).first()
     if user:
+        session['username'] = user.username
         session['user'] = {
             'id': user.id,
             'username': user.username,
@@ -198,6 +214,7 @@ def login_google_callback():
             'foto': user.foto,
             'level': user.level
         }
+        print("✅ Session set:", session.get('user'))
         logging.info(f"User '{user.username}' berhasil login via Google.")
         flash(f"Login berhasil! Selamat datang, {escape(user.username)}.", "success")
         return redirect(url_for('index'))
@@ -273,8 +290,11 @@ def do_register():
             'foto': new_user.foto,
             'level': new_user.level
         }
+        print("Session setelah login Google:", dict(session))
         logging.info(f"User baru '{username}' berhasil registrasi dan login via Google.")
-        flash("Registrasi berhasil! Anda sudah login.", "success")
+        flash("Registrasi berhasil! Anda sudah login untuk pertama kali.", "welcome")
+        session['username'] = new_user.username
+        session['first_time_login'] = True
         return redirect(url_for('index'))
     return render_template("confirm_register.html", user=user_info, form=form)
 
@@ -315,7 +335,7 @@ def register():
                 )
                 db.session.add(new_user)
                 db.session.commit()
-                flash("Registration successful! You can now login.", "success")
+                flash("Registrasi berhasil! Selamat datang di sistem kami. Silakan login untuk mulai menggunakan fitur.", "welcome")
                 return redirect(url_for('login'))
             except Exception as e:
                 db.session.rollback()
@@ -374,6 +394,7 @@ def register_google_callback():
     db.session.commit()
     
     # Login langsung setelah registrasi
+    session['username'] = new_user.username
     session['user'] = {
         'id': new_user.id,
         'username': new_user.username,
@@ -382,7 +403,7 @@ def register_google_callback():
         'foto': new_user.foto,
         'level': new_user.level
     }
-    flash("Registrasi otomatis berhasil! Anda sudah login.", "success")
+    flash("Registrasi berhasil! Selamat datang pengguna baru. Anda sekarang login untuk pertama kali.", "welcome")
     return redirect(url_for('index'))
 
 # Endpoint Find Account
@@ -550,9 +571,36 @@ def reset_password():
         print("Password berhasil diubah.")
         return jsonify({'message': "Password Anda telah berhasil diubah!"}), 200
 
+# Route Index
+@app.route("/")
 @app.route("/index/")
 def index():
-    return render_template("index.html")
+    print("📦 Session saat masuk index:", dict(session))
+    username = None
+    user_data = None
+    notification_count = 0
+    
+    first_time_login = session.pop('first_time_login', False)
+
+    # Cek login via session username (manual)
+    if 'username' in session:
+        username = session['username']
+        user = Users.query.filter_by(username=username).first()
+        if user:
+            notification_count = Notification.query.filter_by(user_id=user.id, is_read=False).count()
+
+    # Cek login via session user (Google OAuth)
+    elif 'user' in session:
+        user_data = session['user'] 
+        username = user_data.get('username')
+        user_id = user_data.get('id')
+        if user_id:
+            notification_count = Notification.query.filter_by(user_id=user_id, is_read=False).count()
+    return render_template('index.html', username=username, notification_count=notification_count, user_data=user_data, first_time_login=first_time_login)
+
+@app.before_request
+def check_session():
+    print("Session sekarang:", dict(session))
 
 @app.route("/request/", methods=["GET", "POST"])
 def request_page():   
@@ -646,13 +694,8 @@ def inject_current_lang():
 def set_theme(theme):
     if theme in ['light', 'dark']:
         session['theme'] = theme
-    return redirect(request.referrer or url_for('index'))
-
-@app.route('/toggle-theme')
-def toggle_theme():
-    current_theme = session.get('theme', 'light')
-    session['theme'] = 'dark' if current_theme == 'light' else 'light'
-    return redirect(request.referrer or url_for('index'))
+        return '', 204
+    return 'Invalid theme', 400
 
 @app.context_processor
 def inject_theme():

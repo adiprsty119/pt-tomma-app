@@ -1,5 +1,11 @@
 <!DOCTYPE html>
-<html x-data :class="{ 'dark': $store.theme.isDark }" lang="{{ current_lang }}">
+<html
+  class="transition duration-300 ease-in-out"
+  :class="{ dark: $store.theme.isDark }"
+  x-data
+  x-init="$store.theme.init();"
+  lang="{{ current_lang }}"
+>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -47,10 +53,37 @@
       defer
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
     ></script>
+    <script>
+      document.addEventListener("alpine:init", () => {
+        Alpine.store("theme", {
+          isDark: {{ 'true' if current_theme == 'dark' else 'false' }},
+          init() {
+            // Sync server state to localStorage
+            localStorage.setItem("theme", this.isDark ? "dark" : "light");
+            document.documentElement.classList.toggle("dark", this.isDark);
+            console.log("🔥 Synced server theme:", this.isDark ? "dark" : "light");
+          },
+          toggle() {
+            this.isDark = !this.isDark;
+            const themeValue = this.isDark ? "dark" : "light";
+            localStorage.setItem("theme", themeValue);
+            document.documentElement.classList.toggle("dark", this.isDark);
+            console.log("🌗 Theme changed to:", themeValue);
+
+            // Update server via fetch
+            fetch(`/set-theme/${themeValue}`, { method: "POST" })
+              .then(() => console.log("✅ Server theme updated"))
+              .catch((err) => console.error("❌ Failed to update server", err));
+          }
+        });
+      });
+    </script>
   </head>
 
   <body
-    class="font-sans scroll-smooth {{ 'bg-background-dark text-white' if current_theme == 'dark' else 'bg-gray-100 text-black' }}"
+    x-data
+    :class="{ 'dark': $store.theme.isDark }"
+    class="transition duration-300 ease-in-out font-sans scroll-smooth {{ 'bg-background-dark text-white' if current_theme == 'dark' else 'bg-gray-100 text-black' }}"
   >
     <!-- Header -->
     <header
@@ -133,7 +166,7 @@
           </a>
 
           <!-- Notifikasi -->
-          {% if session.get('username') %}
+          {% if session.get('username') or session.get('user') %}
           <button
             title="{{ 'Notifikasi' if current_lang == 'id' else 'Notification' }}"
             class="relative flex items-center justify-center text-yellow-400 hover:text-yellow-300 transition text-2xl cursor-pointer my-3"
@@ -245,10 +278,17 @@
             <!-- Dark Mode Toggle -->
             <button
               x-data
-              @click="$store.theme.toggle();
-              fetch(`/set-theme/${$store.theme.isDark ? 'dark' : 'light'}`, { method: 'POST' }).then(() => { window.location.reload(); });"
+              @click="
+                $store.theme.toggle();
+                fetch(`/set-theme/${$store.theme.isDark ? 'dark' : 'light'}`, {
+                  method: 'POST'
+                }).then(() => {
+                  setTimeout(() => window.location.reload(), 150);
+                }).catch(console.error);
+              "
               :title="$store.theme.isDark ? '{{ 'Beralih ke Mode Terang' if current_lang == 'id' else 'Switch to Light Mode' }}' : '{{ 'Beralih ke Mode Gelap' if current_lang == 'id' else 'Switch to Dark Mode' }}'"
               class="relative w-[80px] flex justify-center items-center bg-gray-800 dark:bg-yellow-400 text-yellow-300 dark:text-gray-900 px-0.5 py-1.5 rounded-md text-sm font-semibold transition hover:brightness-110 cursor-pointer"
+              aria-label="Toggle Dark Mode"
             >
               <template
                 x-if="$store.theme.isDark"
@@ -279,13 +319,13 @@
             </button>
 
             <!-- Notifikasi -->
-            {% if session.get('username') %}
+            {% if session.get('username') or session.get('user') %}
             <button
+              id="notification-toggle"
               title="{{ 'Notifikasi' if current_lang == 'id' else 'Notification' }}"
-              class="relative flex items-center justify-center text-yellow-400 hover:text-yellow-300 transition text-2xl cursor-pointer mr-4 ml-5"
+              class="relative flex items-center justify-center text-yellow-400 hover:text-yellow-300 transition text-2xl cursor-pointer my-3"
             >
               <i class="fas fa-bell"></i>
-              <!-- Badge (Opsional) -->
               <span
                 class="absolute -top-1 -right-1 text-[10px] bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center font-semibold"
               >
@@ -293,6 +333,109 @@
               </span>
             </button>
             {% endif %}
+
+            <!-- Notification Box -->
+            <div
+              id="notification-box"
+              class="fixed top-28 -right-2 translate-x-full shadow-lg border rounded-xl z-50 w-80 h-auto md:w-96 transition-all duration-500 ease-in-out opacity-0 pointer-events-none scale-95 {{ 'bg-gray-800' if current_theme == 'dark' else 'bg-white' }}"
+            >
+              <div class="border-b px-4 py-3">
+                <h2
+                  class="text-lg text-center font-bold text-gray-800 relative"
+                >
+                  <span
+                    class="absolute -top-2 -right-4 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-bounce"
+                    >1</span
+                  >
+                  {{ 'KOTAK MASUK' if current_lang == 'id' else 'INBOX' }}
+                </h2>
+              </div>
+
+              <!-- Tab Selector -->
+              <div class="flex border-b text-sm font-medium text-gray-500">
+                <button
+                  id="tab-system"
+                  class="w-1/2 py-2 text-center hover:text-black border-b-2 border-black cursor-pointer"
+                  onclick="switchTab('system')"
+                >
+                  {{ 'Notifikasi Sistem' if current_lang == 'id' else 'System
+                  Notification' }}
+                </button>
+                <button
+                  id="tab-interaction"
+                  class="w-1/2 py-2 text-center hover:text-black border-b-2 border-transparent cursor-pointer"
+                  onclick="switchTab('interaction')"
+                >
+                  {{ 'Interaksi' if current_lang == 'id' else 'Interaction' }}
+                </button>
+              </div>
+
+              <button
+                onclick="clearAllNotifications()"
+                class="px-4 py-2 text-right text-xs text-gray-500 hover:text-red-500 cursor-pointer w-full"
+              >
+                {{ 'Hapus Semua' if current_lang == 'id' else 'Clear All' }}
+              </button>
+
+              <!-- Message List Container -->
+              <div class="max-h-[400px] overflow-y-auto">
+                <div id="system-tab" class="space-y-3 p-4">
+                  <!-- Card 1 -->
+                  <div
+                    class="border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md hover:bg-gray-50 transition"
+                  >
+                    <div class="flex items-start justify-between">
+                      <div class="flex items-center gap-2">
+                        <i
+                          class="fas fa-exclamation-circle text-yellow-400 mr-2"
+                        ></i>
+                        <span class="text-sm font-semibold"
+                          >{{ 'Notifikasi Sistem' if current_lang == 'id' else
+                          'System Notification' }}</span
+                        >
+                        <span
+                          class="w-2 h-2 bg-red-500 rounded-full animate-pulse"
+                        ></span>
+                      </div>
+                      <span class="text-xs text-gray-400 whitespace-nowrap"
+                        >{{ '14 jam lalu' if current_lang == 'id' else '14 hours
+                        ago' }}</span
+                      >
+                    </div>
+                    <h4
+                      class="mt-2 font-bold text-sm {{ 'text-white' if current_theme == 'dark' else 'text-gray-900' }}"
+                    >
+                      {{ '🎉 Liburan Seru Dimulai!' if current_lang == 'id' else
+                      '🎉 The Fun Holiday Begins!' }}
+                    </h4>
+                    <p class="text-sm text-gray-600">
+                      {{ 'Ajukan permintaan minimal 2 layanan pembuatan aplikasi
+                      kami dan dapatkan diskon menarik untuk permintaan ke-3
+                      hingga 40%' if current_lang == 'id' else 'Submit requests
+                      for at least 2 of our application development services and
+                      get up to 40% off on your 3rd request!' }}
+                    </p>
+                    <a
+                      href="#"
+                      class="mt-2 inline-block text-sm text-blue-600 hover:underline"
+                    >
+                      {{ 'Pelajari selengkapnya' if current_lang == 'id' else
+                      'Learn more' }}</a
+                    >
+                  </div>
+
+                  <!-- Tambah card lain di sini -->
+                </div>
+
+                <!-- Tab: Interaksi -->
+                <div id="interaction-tab" class="hidden p-4 space-y-3">
+                  <div class="text-sm text-gray-600 italic">
+                    {{ 'Belum ada interaksi baru' if current_lang == 'id' else
+                    'No recent interactions' }}
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <!-- Sign Up -->
             <a
@@ -1448,8 +1591,7 @@
       <!-- Dark Mode Toggle (Mobile) -->
       <div class="fixed bottom-4 right-4 z-[9999] md:hidden" x-data>
         <button
-          @click="$store.theme.toggle();
-          fetch(`/set-theme/${$store.theme.isDark ? 'dark' : 'light'}`, {method: 'POST',}).then(() => {window.location.reload();});"
+          @click="$store.theme.toggle()"
           class="w-14 h-14 flex justify-center items-center bg-gray-800 dark:bg-yellow-400 text-yellow-300 dark:text-gray-900 rounded-full shadow-lg transition hover:brightness-110 cursor-pointer"
           aria-label="Toggle Dark Mode"
         >
@@ -1499,17 +1641,17 @@
       {% with messages = get_flashed_messages(with_categories=true) %} {% if
       messages %} {% for category, message in messages %}
       <div
-        class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center px-4"
+        class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center px-4 flash-wrapper"
       >
         <div
-          class="w-full max-w-md p-6 rounded-2xl shadow-2xl border animate-fade-in {% if category == 'success' %} bg-green-100 text-green-700 border-green-300 {% else %} bg-red-100 text-red-700 border-red-300 {% endif %}"
+          class="w-full max-w-md p-6 rounded-2xl shadow-2xl border animate-fade-in {% if category in ['success', 'welcome'] %} bg-green-100 text-green-700 border-green-300 {% else %} bg-red-100 text-red-700 border-red-300 {% endif %}"
         >
           <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold">
               {{ 'Notifikasi' if current_lang == 'id' else 'Notification' }}
             </h2>
             <button
-              onclick="this.closest('.fixed').classList.add('hidden')"
+              onclick="closeFlashAndShowNotifBox(this)"
               class="text-3xl hover:text-gray-700 transition cursor-pointer"
             >
               &times;
@@ -1517,8 +1659,8 @@
           </div>
           <p class="text-sm text-gray-700 mb-6">{{ message }}</p>
           <button
-            onclick="this.closest('.fixed').classList.add('hidden')"
-            class="w-full py-2 px-4 {% if category == 'success' %} bg-green-600 hover:bg-green-700 {% else %} bg-red-600 hover:bg-red-700 {% endif %} text-white font-medium rounded-lg transition duration-200 cursor-pointer"
+            onclick="closeFlashAndShowNotifBox(this)"
+            class="w-full py-2 px-4 {% if category in ['success', 'welcome'] %} bg-green-600 hover:bg-green-700 {% else %} bg-red-600 hover:bg-red-700 {% endif %} text-white font-medium rounded-lg transition duration-200 cursor-pointer"
           >
             {{ 'Tutup' if current_lang == 'id' else 'Close' }}
           </button>
@@ -1538,38 +1680,20 @@
     {% include 'script_animation.html' %}
 
     <script>
-      // === Alpine Dark Mode ===
-
-      document.addEventListener("alpine:init", () => {
-        Alpine.store("theme", {
-          isDark: {{ 'true' if current_theme == 'dark' else 'false' }},
-          toggle() {
-            this.isDark = !this.isDark;
-            localStorage.setItem("theme", this.isDark ? "dark" : "light");
-            document.documentElement.classList.toggle("dark", this.isDark);
-          },
-        });
-
-        // Force set saat load awal
-        document.documentElement.classList.toggle("dark", {{ 'true' if current_theme == 'dark' else 'false' }});
-      });
-
-
-      // === Fitur lain dijalankan saat DOM siap ===
+      console.log("first_time_login: {{ first_time_login }}");
       document.addEventListener("DOMContentLoaded", function () {
         // === Smooth Scroll ===
         $('a[href^="#"]').on("click", function (e) {
           e.preventDefault();
           const target = this.hash;
           const $target = $(target);
-
-          $("html, body").stop().animate(
-            {
-              scrollTop: $target.offset().top,
-            },
-            1300,
-            "easeInOutExpo"
-          );
+          $("html, body")
+            .stop()
+            .animate(
+              { scrollTop: $target.offset().top },
+              1300,
+              "easeInOutExpo"
+            );
         });
 
         // === Transparent Header on Scroll ===
@@ -1586,7 +1710,6 @@
 
         // === Flip Card Interaction ===
         const cards = document.querySelectorAll(".card-inner");
-
         cards.forEach((card) => {
           card.addEventListener("click", function (e) {
             cards.forEach((c) => {
@@ -1596,14 +1719,12 @@
             e.stopPropagation();
           });
         });
-
         const socialLinks = document.querySelectorAll(".card-inner a");
         socialLinks.forEach((link) => {
           link.addEventListener("click", function (e) {
             e.stopPropagation();
           });
         });
-
         document.addEventListener("click", function () {
           cards.forEach((card) => {
             card.classList.remove("rotate-y-180");
@@ -1618,7 +1739,6 @@
         ];
         const fadeOverlay = document.getElementById("colorFade");
         let currentIndex = 0;
-
         function showNextImage() {
           fadeOverlay.classList.add("show");
           setTimeout(() => {
@@ -1626,102 +1746,250 @@
             currentIndex = (currentIndex + 1) % images.length;
             images[currentIndex].classList.add("active");
             fadeOverlay.classList.remove("show");
-          }, 800);
+          }, 1000);
+        }
+        setInterval(showNextImage, 4000);
+
+        // === Validasi Form ===
+        const form = document.querySelector("form");
+        if (form) {
+          form.addEventListener("submit", function (e) {
+            const email = document.getElementById("email")?.value || "";
+            let nomor_hp = document.getElementById("nomor_hp")?.value || "";
+            const btn = document.getElementById("submitBtn");
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const hpRegex = /^(08\d{8,11}|\+628\d{7,10})$/;
+            const validPrefixes = [
+              "0811",
+              "0812",
+              "0813",
+              "0821",
+              "0822",
+              "0823",
+              "0851",
+              "0852",
+              "0853",
+              "0817",
+              "0818",
+              "0819",
+              "0857",
+              "0858",
+              "0896",
+              "0897",
+              "0898",
+              "0899",
+            ];
+
+            if (!emailRegex.test(email)) {
+              e.preventDefault();
+              showError("Email tidak valid!");
+              return;
+            }
+
+            if (nomor_hp.startsWith("+62")) {
+              nomor_hp = "0" + nomor_hp.slice(3);
+            }
+
+            if (!hpRegex.test(nomor_hp)) {
+              e.preventDefault();
+              showError(
+                "Nomor HP harus dimulai dengan 08 atau +628, panjang 10-13 digit!"
+              );
+              return;
+            }
+
+            const prefix = nomor_hp.substring(0, 4);
+            if (!validPrefixes.includes(prefix)) {
+              e.preventDefault();
+              showError(
+                "Prefix nomor HP tidak dikenal. Periksa kembali nomor Anda."
+              );
+              return;
+            }
+
+            if (/^(0+|08[0-9]{7}1234|08[0-9]{9}000)$/.test(nomor_hp)) {
+              e.preventDefault();
+              showError("Nomor HP tampaknya tidak valid!");
+              return;
+            }
+
+            if (btn) {
+              btn.disabled = true;
+              btn.innerText = "Mengirim...";
+            }
+          });
         }
 
-        setInterval(showNextImage, 4000);
+        // === Fungsi Notifikasi & Error ===
+        function hideNotification() {
+          const notifBox = document.getElementById("notification-box");
+          if (notifBox) {
+            notifBox.classList.add("translate-x-full");
+            setTimeout(() => notifBox.classList.add("hidden"), 500);
+          }
+        }
+
+        function showError(message) {
+          const overlay = document.getElementById("overlay-error");
+          const errorMsg = document.getElementById("error-message");
+
+          errorMsg.textContent = message;
+          overlay.classList.remove("hidden");
+          overlay.classList.add("flex");
+          document.body.classList.add("blurred", "overflow-hidden");
+        }
+
+        function closeError() {
+          const overlay = document.getElementById("overlay-error");
+
+          overlay.classList.remove("flex");
+          overlay.classList.add("hidden");
+          document.body.classList.remove("blurred", "overflow-hidden");
+        }
+
+        // Fungsi untuk menghapus semua notifikasi (konten system-tab)
+        function clearAllNotifications() {
+          const container = document.getElementById("system-tab");
+          if (container) {
+            container.innerHTML =
+              '<div class="text-sm text-gray-400 italic text-center py-2">Tidak ada notifikasi</div>';
+          }
+        }
       });
     </script>
     <script>
-      function showError(message) {
-        const overlay = document.getElementById("overlay-error");
-        const errorMsg = document.getElementById("error-message");
+      const toggleButton = document.getElementById("notification-toggle");
+      const notifBox = document.getElementById("notification-box");
 
-        errorMsg.textContent = message;
-        overlay.classList.remove("hidden");
-        overlay.classList.add("flex");
-        document.body.classList.add("blurred", "overflow-hidden");
-      }
+      // Toggle show/hide box
+      toggleButton?.addEventListener("click", function (event) {
+        event.stopPropagation();
+        const isOpen = notifBox.classList.contains("opacity-100");
 
-      function closeError() {
-        const overlay = document.getElementById("overlay-error");
-
-        overlay.classList.remove("flex");
-        overlay.classList.add("hidden");
-        document.body.classList.remove("blurred", "overflow-hidden");
-      }
-
-      document.querySelector("form").addEventListener("submit", function (e) {
-        const email = document.getElementById("email").value;
-        const nomor_hp = document.getElementById("nomor_hp").value;
-        const btn = document.getElementById("submitBtn");
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const hpRegex = /^(08\d{8,11}|\+628\d{7,10})$/;
-        const validPrefixes = [
-          "0811",
-          "0812",
-          "0813",
-          "0821",
-          "0822",
-          "0823",
-          "0851",
-          "0852",
-          "0853",
-          "0817",
-          "0818",
-          "0819",
-          "0857",
-          "0858",
-          "0896",
-          "0897",
-          "0898",
-          "0899",
-        ];
-
-        // Validasi email
-        if (!emailRegex.test(email)) {
-          e.preventDefault();
-          showError("Email tidak valid!");
-          return;
-        }
-
-        // Normalisasi nomor: ubah +628xxxx jadi 08xxxx
-        if (nomor_hp.startsWith("+62")) {
-          nomor_hp = "0" + nomor_hp.slice(3);
-        }
-
-        // Validasi Nomor HP Format Dasar
-        if (!hpRegex.test(nomor_hp)) {
-          e.preventDefault();
-          showError(
-            "Nomor HP harus dimulai dengan 08 atau +628, panjang 10-13 digit!"
+        if (isOpen) {
+          notifBox.classList.remove(
+            "opacity-100",
+            "pointer-events-auto",
+            "scale-100",
+            "translate-x-0"
           );
-          return;
-        }
-
-        // Validasi Prefix Provider
-        const prefix = nomor_hp.substring(0, 4);
-        if (!validPrefixes.includes(prefix)) {
-          e.preventDefault();
-          showError(
-            "Prefix nomor HP tidak dikenal. Periksa kembali nomor Anda."
+          notifBox.classList.add(
+            "opacity-0",
+            "pointer-events-none",
+            "scale-95",
+            "translate-x-full"
           );
-          return;
-        }
-
-        // Validasi Dummy Number
-        if (/^(0+|08[0-9]{7}1234|08[0-9]{9}000)$/.test(nomor_hp)) {
-          e.preventDefault();
-          showError("Nomor HP tampaknya tidak valid!");
-          return;
-        }
-
-        // Jika lolos validasi, ubah teks tombol submit
-        if (btn) {
-          btn.disabled = true;
-          btn.innerText = "Mengirim...";
+        } else {
+          notifBox.classList.remove(
+            "opacity-0",
+            "pointer-events-none",
+            "scale-95",
+            "translate-x-full"
+          );
+          notifBox.classList.add(
+            "opacity-100",
+            "pointer-events-auto",
+            "scale-100",
+            "translate-x-0"
+          );
         }
       });
+
+      // Klik di luar notif box → tutup
+      document.addEventListener("click", function (event) {
+        if (
+          !notifBox.contains(event.target) &&
+          !toggleButton?.contains(event.target)
+        ) {
+          notifBox.classList.remove(
+            "opacity-100",
+            "pointer-events-auto",
+            "scale-100",
+            "translate-x-0"
+          );
+          notifBox.classList.add(
+            "opacity-0",
+            "pointer-events-none",
+            "scale-95",
+            "translate-x-full"
+          );
+        }
+      });
+
+      // Flash → Buka notif box via tombol
+      window.closeFlashAndShowNotifBox = function (element) {
+        console.log("✅ Fungsi closeFlashAndShowNotifBox dipanggil");
+        const flashOverlay = element.closest(".fixed");
+        if (flashOverlay) {
+          flashOverlay.classList.add("hidden");
+        }
+
+        notifBox.classList.remove(
+          "opacity-0",
+          "pointer-events-none",
+          "scale-95",
+          "translate-x-full"
+        );
+        notifBox.classList.add(
+          "opacity-100",
+          "pointer-events-auto",
+          "scale-100",
+          "translate-x-0"
+        );
+
+        setTimeout(() => {
+          notifBox.classList.remove(
+            "opacity-100",
+            "pointer-events-auto",
+            "scale-100",
+            "translate-x-0"
+          );
+          notifBox.classList.add(
+            "opacity-0",
+            "pointer-events-none",
+            "scale-95",
+            "translate-x-full"
+          );
+        }, 6000);
+      };
+
+      // ✅ Tampilkan otomatis jika login pertama kali
+      document.addEventListener("DOMContentLoaded", function () {
+        {% if first_time_login %}
+        console.log("✅ Trigger otomatis Notifikasi pertama kali login");
+
+        notifBox.classList.remove(
+          "opacity-0",
+          "pointer-events-none",
+          "scale-95",
+          "translate-x-full"
+        );
+        notifBox.classList.add(
+          "opacity-100",
+          "pointer-events-auto",
+          "scale-100",
+          "translate-x-0"
+        );
+
+        setTimeout(() => {
+          notifBox.classList.remove(
+            "opacity-100",
+            "pointer-events-auto",
+            "scale-100",
+            "translate-x-0"
+          );
+          notifBox.classList.add(
+            "opacity-0",
+            "pointer-events-none",
+            "scale-95",
+            "translate-x-full"
+          );
+        }, 6000);
+        {% endif %}
+      });
     </script>
+    <span
+      class="hidden opacity-100 pointer-events-auto scale-100 translate-x-0"
+    ></span>
   </body>
 </html>
