@@ -10,7 +10,9 @@ from authlib.integrations.flask_client import OAuth
 from markupsafe import escape
 from datetime import datetime, timedelta
 from flask_wtf import CSRFProtect
+from flask_wtf.csrf import CSRFError 
 from forms import LoginForm, RegisterForm
+from forms import SettingsForm
 from config import Config
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -123,9 +125,9 @@ def check_password_in_db(username, password):
 def generate_verification_code():
     return random.randint(100000, 999999)
 
-@app.errorhandler(400)
+@app.errorhandler(CSRFError)
 def handle_csrf_error(e):
-    return render_template("400.html", message="Permintaan tidak valid. Silakan muat ulang halaman."), 400
+    return render_template('csrf_error.html', reason=e.description), 400
 
 @app.errorhandler(429)
 def ratelimit_handler(e):
@@ -162,7 +164,7 @@ def login():
             logging.warning(f"Login gagal: password salah untuk user '{username}'.")
             flash("Password salah!", "danger")
         else:
-            session['username'] = username  # ⬅️ Set session saat berhasil login
+            session['username'] = username  
             safe_username = escape(username)
             logging.info(f"User '{username}' berhasil login.")
             flash(f"Login berhasil! Selamat datang, {safe_username}.", "success")
@@ -182,8 +184,8 @@ def login_google():
 def login_google_callback():
     try:
         token = google.authorize_access_token()
-        resp = google.get('userinfo')  # ambil data user dari Google
-        resp.raise_for_status()  # pastikan response OK (status code 200)
+        resp = google.get('userinfo')  
+        resp.raise_for_status()  
         user_info = resp.json()
     except Exception as e:
         logging.warning(f"Login Google gagal: {e}") 
@@ -193,6 +195,7 @@ def login_google_callback():
     # Proses lanjut jika data user berhasil diambil
     email = user_info.get('email')
     username = user_info.get('name') or "Pengguna"
+    picture = user_info.get('picture') or "img/default-user.png"
     
     if not email:
         flash("Email dari akun Google tidak ditemukan.", "danger")
@@ -205,6 +208,11 @@ def login_google_callback():
     
     user = Users.query.filter_by(email=email).first()
     if user:
+        # Update foto dari Google jika belum tersimpan
+        if not user.foto or user.foto == "img/default-user.png":
+            user.foto = user_info.get('picture') or "img/default-user.png"
+            db.session.commit()
+            
         session['username'] = user.username
         session['user'] = {
             'id': user.id,
@@ -214,9 +222,11 @@ def login_google_callback():
             'foto': user.foto,
             'level': user.level
         }
+        session['first_time_login'] = True
+        session.modified = True 
         print("✅ Session set:", session.get('user'))
         logging.info(f"User '{user.username}' berhasil login via Google.")
-        flash(f"Login berhasil! Selamat datang, {escape(user.username)}.", "success")
+        flash(f"Login berhasil! Selamat datang, {escape(user.nama_lengkap)}.", "success")
         return redirect(url_for('index'))
     else:
         # Jika belum ada, arahkan ke konfirmasi registrasi
@@ -307,7 +317,7 @@ def register():
         username = request.form['username']
         password = request.form['password']
         confirm_password = request.form['confirmPassword']
-        level = 'user'  # ⬅️ Default level tanpa input dari user
+        level = 'user'  
         
         # Validasi password dengan regex
         password_pattern = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
@@ -578,8 +588,12 @@ def index():
     username = None
     user_data = None
     notification_count = 0
+    profile_picture = None
     
-    first_time_login = session.pop('first_time_login', False)
+    print("session keys:", session.keys())
+    print("first_time_login:", session.get("first_time_login"))
+    print("Session di /index/:", dict(session))
+    first_time = session.get('first_time_login', None)
 
     # Cek login via session username (manual)
     if 'username' in session:
@@ -587,15 +601,25 @@ def index():
         user = Users.query.filter_by(username=username).first()
         if user:
             notification_count = Notification.query.filter_by(user_id=user.id, is_read=False).count()
+            profile_picture = user.foto
+        else:
+            session.pop('username', None)
 
     # Cek login via session user (Google OAuth)
     elif 'user' in session:
         user_data = session['user'] 
         username = user_data.get('username')
+        profile_picture = user_data.get('foto')
         user_id = user_data.get('id')
         if user_id:
             notification_count = Notification.query.filter_by(user_id=user_id, is_read=False).count()
-    return render_template('index.html', username=username, notification_count=notification_count, user_data=user_data, first_time_login=first_time_login, debug_theme=session.get("theme"))
+    return render_template('index.html', username=username, profile_picture=profile_picture, notification_count=notification_count, user_data=user_data, first_time_login=first_time, debug_theme=session.get("theme"))
+
+@app.route("/clear-first-login-flag", methods=["POST"])
+@csrf.exempt
+def clear_first_login_flag():
+    session.pop('first_time_login', None)
+    return '', 204
 
 @app.before_request
 def check_session():
@@ -691,11 +715,9 @@ def inject_current_lang():
 
 @app.route('/set-theme/<theme>', methods=['POST'])
 def set_theme(theme):
-    print("📥 Menerima perubahan tema ke:", theme)
     if theme in ['light', 'dark']:
         session['theme'] = theme
         session.modified = True
-        print("💾 Disimpan di session:", session['theme'])
         return '', 204
     return 'Invalid theme', 400
 
@@ -714,6 +736,20 @@ def portfolio():
 @app.route("/services/")
 def services():
     return render_template("services.html")
+
+@app.route('/settings/')
+def settings():
+    if 'username' not in session and 'user' not in session:
+        flash("Silakan login terlebih dahulu", "warning")
+        return redirect(url_for('login'))
+
+    form = SettingsForm()
+    user = Users.query.filter_by(username=session['username']).first()
+    if request.method == 'POST' and form.validate_on_submit():
+        # Lakukan penyimpanan data
+        flash("Pengaturan berhasil diperbarui.", "success")
+        return redirect(url_for('settings'))
+    return render_template("settings.html", user=user, form=form)
 
 @app.route('/logout/')
 def logout():

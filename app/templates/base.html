@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html class="transition duration-300 ease-in-out" lang="{{ current_lang }}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
+    <title>
+      {% block title %}{{ 'Aplikasi' if current_lang == 'id' else 'Application'
+      }}{% endblock %}
+    </title>
+    <!-- Tailwind CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/output.css') }}"
+    />
+
+    <!-- Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+    />
+
+    <!-- Alpine.js -->
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+    {% block head %}{% endblock %}
+  </head>
+  <body
+    class="transition duration-300 ease-in-out font-sans scroll-smooth {{ 'bg-background-dark text-white' if current_theme == 'dark' else 'bg-gray-100 text-black' }}"
+  >
+    <!-- Header -->
+    <header
+      class="top-0 left-0 w-full bg-opacity-100 transition-all duration-300 shadow py-8 {{ 'bg-gray-900' if current_theme == 'dark' else 'bg-gray-100' }}"
+    >
+      <div class="container mx-auto px-4 flex justify-between items-center">
+        <a
+          href="/"
+          class="font-bold text-lg {{ 'text-white hover:text-yellow-600' if current_theme == 'dark' else 'text-gray-900 hover:text-gray-950' }}"
+        >
+          <i class="fas fa-cubes"></i> MyApp
+        </a>
+
+        <!-- Profil atau Login Link -->
+        <div class="flex items-center gap-4">
+          {% if session.get('username') or session.get('user') %}
+          <a
+            href="/settings/"
+            class="text-white text-sm {{ 'text-white hover:text-yellow-600' if current_theme == 'dark' else 'text-gray-900 hover:text-gray-950' }}"
+          >
+            <i class="fas fa-user-cog"></i> {{ 'Pengaturan' if current_lang ==
+            'id' else 'Settings' }}
+          </a>
+          <a
+            href="/logout/"
+            class="text-white text-sm {{ 'text-white hover:text-yellow-600' if current_theme == 'dark' else 'text-gray-900 hover:text-gray-950' }}"
+          >
+            <i class="fas fa-sign-out-alt"></i> {{ 'Keluar' if current_lang ==
+            'id' else 'Logout' }}
+          </a>
+          {% else %}
+          <a
+            href="/login/"
+            class="text-white text-sm {{ 'text-white hover:text-yellow-600' if current_theme == 'dark' else 'text-gray-900 hover:text-gray-950' }}"
+          >
+            <i class="fas fa-sign-in-alt"></i> {{ 'Masuk' if current_lang ==
+            'id' else 'Login' }}
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </header>
+
+    <!-- Konten Utama -->
+    <main
+      class="py-8 {{ 'bg-gray-700' if current_theme == 'dark' else 'bg-gray-300' }}"
+    >
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %}
+      <div class="max-w-3xl mx-auto px-4">
+        {% for category, message in messages %}
+        <div
+          class="mb-4 px-4 py-3 rounded {{
+              'bg-green-100 text-green-800' if category == 'success' else
+              'bg-red-100 text-red-800' if category == 'danger' else
+              'bg-yellow-100 text-yellow-800' if category == 'warning' else
+              'bg-blue-100 text-blue-800'
+            }}"
+        >
+          {{ message }}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %} {% endwith %} {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer
+      class="text-white text-center py-4 {{ 'bg-gray-900' if current_theme == 'dark' else 'bg-gray-100' }}"
+    >
+      &copy; {{ current_year or 2025 }} - MyApp. All rights reserved.
+    </footer>
+
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

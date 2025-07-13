@@ -27,7 +27,7 @@ class Users(db.Model):
     email = db.Column(db.String(255), nullable=False)
     jenis_kelamin = db.Column(db.String(255), nullable=False)
     usia = db.Column(db.String(255), nullable=False)
-    foto = db.Column(db.String(255), nullable=False)
+    foto = db.Column(db.String(255), default="img/default-user.png")
     nomor_hp = db.Column(db.String(255), nullable=False)
     level = db.Column(ENUM('admin', 'user', name='user_level'), nullable=False)
     reset_token = db.Column(db.String(255), nullable=True, default="")
