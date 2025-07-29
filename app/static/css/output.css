@@ -487,8 +487,8 @@
   .h-\[350px\] {
     height: 350px;
   }
-  .h-auto {
-    height: auto;
+  .h-lvh {
+    height: 100lvh;
   }
   .max-h-\[400px\] {
     max-height: 400px;
@@ -807,6 +807,9 @@
   .border-gray-300 {
     border-color: var(--color-gray-300);
   }
+  .border-gray-400 {
+    border-color: var(--color-gray-400);
+  }
   .border-gray-600 {
     border-color: var(--color-gray-600);
   }
@@ -824,6 +827,9 @@
   }
   .border-transparent {
     border-color: transparent;
+  }
+  .border-white {
+    border-color: var(--color-white);
   }
   .border-yellow-300 {
     border-color: var(--color-yellow-300);
@@ -991,6 +997,9 @@
   }
   .py-24 {
     padding-block: calc(var(--spacing) * 24);
+  }
+  .pt-2\.5 {
+    padding-top: calc(var(--spacing) * 2.5);
   }
   .pt-4 {
     padding-top: calc(var(--spacing) * 4);
@@ -1391,6 +1400,13 @@
       }
     }
   }
+  .hover\:bg-gray-800 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-gray-800);
+      }
+    }
+  }
   .hover\:bg-gray-900 {
     &:hover {
       @media (hover: hover) {
@@ -1483,17 +1499,17 @@
       }
     }
   }
-  .hover\:text-red-500 {
-    &:hover {
-      @media (hover: hover) {
-        color: var(--color-red-500);
-      }
-    }
-  }
   .hover\:text-red-700 {
     &:hover {
       @media (hover: hover) {
         color: var(--color-red-700);
+      }
+    }
+  }
+  .hover\:text-white {
+    &:hover {
+      @media (hover: hover) {
+        color: var(--color-white);
       }
     }
   }

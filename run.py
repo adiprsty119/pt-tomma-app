@@ -31,6 +31,8 @@ app.config['SESSION_FILE_DIR'] = os.path.join(app.root_path, 'flask_session')
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
+app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 app.secret_key = os.getenv("APP_SECRET_KEY")
 Session(app)
 
@@ -39,6 +41,14 @@ app.config.from_object(Config)
 limiter = Limiter(get_remote_address, app=app)
 logging.basicConfig(filename='login.log', level=logging.INFO,
                     format='%(asctime)s %(levelname)s:%(message)s')
+
+# Buat folder uploads jika belum ada
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
+    
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Configure Flask-Mail OTP
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -737,16 +747,47 @@ def portfolio():
 def services():
     return render_template("services.html")
 
-@app.route('/settings/')
+@app.route('/settings/', methods=['GET', 'POST'])
 def settings():
     if 'username' not in session and 'user' not in session:
         flash("Silakan login terlebih dahulu", "warning")
         return redirect(url_for('login'))
 
-    form = SettingsForm()
     user = Users.query.filter_by(username=session['username']).first()
-    if request.method == 'POST' and form.validate_on_submit():
-        # Lakukan penyimpanan data
+    if user is None:
+        flash("User tidak ditemukan di database.", "danger")
+        return redirect(url_for('login'))
+    
+    form = SettingsForm(obj=user)
+    
+    if form.validate_on_submit():
+        # Update data pengguna dari form
+        user.nama_lengkap = form.nama_lengkap.data
+        user.username = form.username.data
+        user.email = form.email.data
+        user.nomor_hp = form.nomor_hp.data
+        user.jenis_kelamin = form.jenis_kelamin.data
+        user.usia = form.usia.data
+        
+        # Ganti password
+        if check_password_hash(user.password, form.old_password.data):
+            if form.new_password.data == form.confirm_password.data:
+                user.password = generate_password_hash(form.new_password.data)
+                flash("Password berhasil diperbarui.", "success")
+            else:
+                flash("Konfirmasi password tidak cocok.", "danger")
+        else:
+            flash("Password lama salah.", "danger")
+    
+        # Upload foto profil
+        foto_file = form.foto.data
+        if foto_file and allowed_file(foto_file.filename):
+            filename = f"{secrets.token_hex(8)}_{secure_filename(foto_file.filename)}"
+            foto_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            foto_file.save(foto_path)
+            user.foto = f"uploads/{filename}"
+
+        db.session.commit()
         flash("Pengaturan berhasil diperbarui.", "success")
         return redirect(url_for('settings'))
     return render_template("settings.html", user=user, form=form)

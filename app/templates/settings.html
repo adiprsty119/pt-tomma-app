@@ -1,86 +1,120 @@
-{% extends 'base.html' %}
-{% block content %}
+{% extends 'base.html' %} {% block content %}
 <div class="max-w-4xl mx-auto px-4 py-10">
-  <div class="shadow-lg rounded-xl p-8 border {{ 'bg-gray-900 hover:shadow-yellow-400/30' if current_theme == 'dark' else 'bg-white hover:shadow-yellow-400/30' }}">
-    <h1 class="text-3xl font-semibold mb-6 border-b pb-4 {{ 'text-white' if current_theme == 'dark' else 'text-gray-900' }}">
+  <div
+    class="shadow-lg rounded-xl p-8 border {{ 'bg-gray-900 hover:shadow-yellow-400/30' if current_theme == 'dark' else 'bg-white hover:shadow-yellow-400/30' }}"
+  >
+    <h1
+      class="text-3xl font-semibold mb-6 border-b pb-4 {{ 'text-white' if current_theme == 'dark' else 'text-gray-900' }}"
+    >
       {{ 'Pengaturan Akun' if current_lang == 'id' else 'Account Settings' }}
     </h1>
 
-    <form method="POST" enctype="multipart/form-data" class="space-y-8">
-    {{ form.csrf_token }}
+    <form
+      method="post"
+      action="/settings/"
+      enctype="multipart/form-data"
+      class="space-y-8"
+    >
+      {{ form.hidden_tag() }}
       <!-- 1. Foto Profil -->
       <div class="flex items-center gap-6 cursor-pointer">
         <div class="relative">
-          <img src="{{ user.foto }}" alt="Foto Profil"
-            class="w-20 h-20 rounded-full border-2 border-gray-300 object-cover shadow">
+          <img
+            src="{{ url_for('static', filename=user.foto) if user.foto else url_for('static', filename='images/profil-default.jpg') }}"
+            alt="Foto Profil"
+            class="w-20 h-20 rounded-full border-2 border-gray-300 object-cover shadow"
+          />
         </div>
         <div>
-          <label class="text-sm font-medium text-gray-700 block mb-1">{{ 'Upload Foto Baru' if current_lang == 'id' else 'Upload New Photo' }}</label>
-          <input type="file" name="foto" accept="image/*"
-            class="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-400 file:text-white hover:file:bg-yellow-300">
+          <label class="text-sm font-medium text-gray-700 block mb-1"
+            >{{ 'Upload Foto Baru' if current_lang == 'id' else 'Upload New
+            Photo' }}</label
+          >
+          {{ form.foto(class="block w-full text-sm text-gray-600 file:mr-4
+          file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm
+          file:font-semibold file:bg-yellow-400 file:text-white
+          hover:file:bg-yellow-300") }}
         </div>
       </div>
 
       <!-- 2. Informasi Pribadi -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label class="text-sm font-semibold">{{ 'Nama Lengkap' if current_lang == 'id' else 'Full Name' }}</label>
-          <input type="text" name="nama_lengkap" value="{{ user.nama_lengkap }}"
-            class="mt-1 w-full border rounded-lg px-4 py-2 shadow-sm focus:ring focus:ring-yellow-200" />
+          <label class="text-sm font-semibold"
+            >{{ 'Nama Lengkap' if current_lang == 'id' else 'Full Name'
+            }}</label
+          >
+          {{ form.nama_lengkap(class="mt-1 w-full border rounded-lg px-4 py-2
+          shadow-sm focus:ring focus:ring-yellow-200") }}
         </div>
         <div>
           <label class="text-sm font-semibold">Username</label>
-          <input type="text" name="username" value="{{ user.username }}"
-            class="mt-1 w-full border rounded-lg px-4 py-2 shadow-sm focus:ring focus:ring-yellow-200" />
+          {{ form.username(class="mt-1 w-full border rounded-lg px-4 py-2
+          shadow-sm focus:ring focus:ring-yellow-200") }}
         </div>
         <div>
           <label class="text-sm font-semibold">Email</label>
-          <input type="email" name="email" value="{{ user.email }}"
-            class="mt-1 w-full border rounded-lg px-4 py-2 shadow-sm focus:ring focus:ring-yellow-200" />
+          {{ form.email(class="mt-1 w-full border rounded-lg px-4 py-2 shadow-sm
+          focus:ring focus:ring-yellow-200") }}
         </div>
         <div>
-          <label class="text-sm font-semibold">{{ 'Nomor HP' if current_lang == 'id' else 'Phone Number' }}</label>
-          <input type="text" name="nomor_hp" value="{{ user.nomor_hp }}"
-            class="mt-1 w-full border rounded-lg px-4 py-2 shadow-sm focus:ring focus:ring-yellow-200" />
+          <label class="text-sm font-semibold"
+            >{{ 'Nomor HP' if current_lang == 'id' else 'Phone Number' }}</label
+          >
+          {{ form.nomor_hp(class="mt-1 w-full border rounded-lg px-4 py-2
+          shadow-sm focus:ring focus:ring-yellow-200") }}
         </div>
         <div>
-          <label class="text-sm font-semibold">{{ 'Gender' if current_lang == 'id' else 'Jenis Kelamin' }}</label>
-          <select name="jenis_kelamin"
-            class="mt-1 w-full border rounded-lg px-4 py-2 shadow-sm focus:ring focus:ring-yellow-200">
-            <option value="Laki-Laki" {% if user.jenis_kelamin=='Laki-Laki' %}selected{% endif %}>{{ 'Laki-laki' if current_lang == 'id' else 'Male' }}</option>
-            <option value="Perempuan" {% if user.jenis_kelamin=='Perempuan' %}selected{% endif %}>{{ 'Perempuan' if current_lang == 'id' else 'Female' }}</option>
-          </select>
+          <label class="text-sm font-semibold"
+            >{{ 'Jenis Kelamin' if current_lang == 'id' else 'Gender' }}</label
+          >
+          {{ form.jenis_kelamin(class="mt-1 w-full border rounded-lg px-4 py-2
+          shadow-sm focus:ring focus:ring-yellow-200") }}
         </div>
         <div>
-          <label class="text-sm font-semibold">{{ 'Usia' if current_lang == 'id' else 'Age' }}</label>
-          <input type="text" name="usia" value="{{ user.usia }}"
-            class="mt-1 w-full border rounded-lg px-4 py-2 shadow-sm focus:ring focus:ring-yellow-200" />
+          <label class="text-sm font-semibold"
+            >{{ 'Usia' if current_lang == 'id' else 'Age' }}</label
+          >
+          {{ form.usia(class="mt-1 w-full border rounded-lg px-4 py-2 shadow-sm
+          focus:ring focus:ring-yellow-200") }}
         </div>
       </div>
 
       <!-- 3. Ganti Password -->
       <div>
-        <h2 class="text-xl font-semibold mb-3 border-t pt-6">{{ 'Ganti Password' if current_lang == 'id' else 'Change Password' }}</h2>
+        <h2 class="text-xl font-semibold mb-3 border-t pt-6">
+          {{ 'Ganti Password' if current_lang == 'id' else 'Change Password' }}
+        </h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <input type="password" name="old_password" placeholder="{{ 'Password Lama' if current_lang == 'id' else 'Current Password' }}"
-            class="border rounded-lg px-4 py-2 shadow-sm focus:ring focus:ring-yellow-200">
-          <input type="password" name="new_password" placeholder="{{ 'Password Baru' if current_lang == 'id' else 'New Password' }}"
-            class="border rounded-lg px-4 py-2 shadow-sm focus:ring focus:ring-yellow-200">
-          <input type="password" name="confirm_password" placeholder="{{ 'Ulangi Password' if current_lang == 'id' else 'Confirm Password' }}"
-            class="border rounded-lg px-4 py-2 shadow-sm focus:ring focus:ring-yellow-200">
+          {{ form.old_password(class="border rounded-lg px-4 py-2 shadow-sm
+          focus:ring focus:ring-yellow-200", placeholder=('Password Lama' if
+          current_lang == 'id' else 'Current Password')) }} {{
+          form.new_password(class="border rounded-lg px-4 py-2 shadow-sm
+          focus:ring focus:ring-yellow-200", placeholder=('Password Baru' if
+          current_lang == 'id' else 'New Password')) }} {{
+          form.confirm_password(class="border rounded-lg px-4 py-2 shadow-sm
+          focus:ring focus:ring-yellow-200", placeholder=('Ulangi Password' if
+          current_lang == 'id' else 'Confirm Password')) }}
         </div>
       </div>
 
       <!-- 4. Info Login -->
       <div class="pt-4 border-t text-sm text-gray-600">
-        <p>Login via Google: <strong class="text-gray-800">{{ user.login_method or 'None' }}</strong></p>
+        <p>
+          Login via Google:
+          <strong class="text-gray-800"
+            >{{ user.login_method or 'None' }}</strong
+          >
+        </p>
         <p>Level: <strong class="text-gray-800">{{ user.level }}</strong></p>
       </div>
 
       <!-- 5. Tombol Simpan -->
       <div class="text-end pt-4 border-t">
-        <button type="submit"
-          class="inline-block bg-yellow-400 hover:bg-yellow-300 text-white font-semibold px-6 py-2 rounded-lg shadow cursor-pointer">
+        <button
+          type="submit"
+          class="inline-block bg-yellow-400 hover:bg-yellow-300 text-white font-semibold px-6 py-2 rounded-lg shadow cursor-pointer"
+        >
           {{ 'Simpan Perubahan' if current_lang == 'id' else 'Save Changes' }}
         </button>
       </div>

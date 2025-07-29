@@ -344,11 +344,11 @@
             <!-- Notification Box -->
             <div
               id="notification-box"
-              class="fixed top-28 -right-2 translate-x-full shadow-lg border rounded-xl z-[9999] w-80 h-auto md:w-96 transition-all duration-500 ease-in-out opacity-0 pointer-events-none scale-95 {{ 'bg-gray-800' if current_theme == 'dark' else 'bg-white' }}"
+              class="fixed top-28 -right-2 translate-x-full shadow-lg border rounded-xl z-[9999] w-80 h-lvh md:w-96 transition-all duration-500 ease-in-out opacity-0 pointer-events-none scale-95 {{ 'bg-gray-800 border-gray-600' if current_theme == 'dark' else 'bg-white border-gray-400' }}"
             >
               <div class="border-b px-4 py-3">
                 <h2
-                  class="text-lg text-center font-bold text-gray-800 relative"
+                  class="text-lg text-center font-bold relative {{ 'text-white' if current_theme == 'dark' else 'text-gray-800' }}"
                 >
                   <span
                     class="absolute -top-2 -right-4 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-bounce"
@@ -359,10 +359,12 @@
               </div>
 
               <!-- Tab Selector -->
-              <div class="flex border-b text-sm font-medium text-gray-500">
+              <div
+                class="flex border-b text-sm font-medium {{ 'text-white' if current_theme == 'dark' else 'text-gray-500' }}"
+              >
                 <button
                   id="tab-system"
-                  class="w-1/2 py-2 text-center hover:text-black border-b-2 border-black cursor-pointer"
+                  class="w-1/2 py-2 text-center border-b-2 cursor-pointer {{ 'border-white hover:text-white' if current_theme == 'dark' else 'border-black hover:text-black' }}"
                   onclick="switchTab('system')"
                 >
                   {{ 'Notifikasi Sistem' if current_lang == 'id' else 'System
@@ -370,7 +372,7 @@
                 </button>
                 <button
                   id="tab-interaction"
-                  class="w-1/2 py-2 text-center hover:text-black border-b-2 border-transparent cursor-pointer"
+                  class="w-1/2 py-2 text-center border-b-2 border-transparent cursor-pointer {{ 'hover:text-white' if current_theme == 'dark' else 'hover:text-black' }}"
                   onclick="switchTab('interaction')"
                 >
                   {{ 'Interaksi' if current_lang == 'id' else 'Interaction' }}
@@ -379,7 +381,7 @@
 
               <button
                 onclick="clearAllNotifications()"
-                class="px-4 py-2 text-right text-xs text-gray-500 hover:text-red-500 cursor-pointer w-full"
+                class="px-4 py-2 text-right text-xs text-red-500 hover:text-red-700 hover:font-bold cursor-pointer w-full"
               >
                 {{ 'Hapus Semua' if current_lang == 'id' else 'Clear All' }}
               </button>
@@ -389,7 +391,7 @@
                 <div id="system-tab" class="space-y-3 p-4">
                   <!-- Card 1 -->
                   <div
-                    class="border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md hover:bg-gray-50 transition"
+                    class="border rounded-lg p-3 shadow-sm hover:shadow-md transition {{ 'hover:bg-gray-800' if current_theme == 'dark' else 'border-gray-200 hover:bg-gray-50' }}"
                   >
                     <div class="flex items-start justify-between">
                       <div class="flex items-center gap-2">
@@ -415,7 +417,9 @@
                       {{ '🎉 Liburan Seru Dimulai!' if current_lang == 'id' else
                       '🎉 The Fun Holiday Begins!' }}
                     </h4>
-                    <p class="text-sm text-gray-600">
+                    <p
+                      class="text-sm pt-2.5 {{ 'text-gray-300' if current_theme == 'dark' else 'text-gray-600' }}"
+                    >
                       {{ 'Ajukan permintaan minimal 2 layanan pembuatan aplikasi
                       kami dan dapatkan diskon menarik untuk permintaan ke-3
                       hingga 40%' if current_lang == 'id' else 'Submit requests
@@ -457,7 +461,7 @@
                     'Account' }}"
               >
                 <img
-                  src="{% if profile_picture.startswith('http') %}{{ profile_picture }}{% else %}{{ url_for('static', filename=profile_picture) }}{% endif %}"
+                  src="{% if profile_picture and profile_picture.startswith('http') %}{{ profile_picture }}{% else %}{{ url_for('static', filename=profile_picture or 'images/profil-default.jpg') }}{% endif %}"
                   alt="Foto Profil"
                   class="w-9 h-9 rounded-full border border-gray-300 object-cover"
                 />
